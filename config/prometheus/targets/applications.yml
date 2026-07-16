@@ -1,0 +1,13 @@
+# SiteLedger API
+- targets: ['backend:3000']
+  labels:
+    service: siteledger
+    compose_project: app
+    hostname: vmi3410257
+
+# Nifty Trading Bot (requires image rebuild with prometheus-client and metrics.py)
+#- targets: ['trading-bot:8000']
+#  labels:
+#    service: trading-bot
+#    compose_project: trading-bot
+#    hostname: vmi3410257
