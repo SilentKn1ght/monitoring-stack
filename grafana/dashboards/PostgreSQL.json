@@ -78,7 +78,7 @@
         "#7eb26d",
         "#d44a3a"
       ],
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -141,7 +141,7 @@
       ],
       "thresholds": "",
       "title": "Version",
-      "type": "singlestat",
+      "type": "stat",
       "valueFontSize": "80%",
       "valueMaps": [
         {
@@ -161,7 +161,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
       "description": "start time of the process",
       "format": "dateTimeFromNow",
       "gauge": {
@@ -224,7 +224,7 @@
       ],
       "thresholds": "",
       "title": "Start Time",
-      "type": "singlestat",
+      "type": "stat",
       "valueFontSize": "70%",
       "valueMaps": [
         {
@@ -244,7 +244,7 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(50, 172, 45, 0.97)"
       ],
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
       "format": "decbytes",
       "gauge": {
         "maxValue": 100,
@@ -307,7 +307,7 @@
       ],
       "thresholds": "",
       "title": "Current fetch data",
-      "type": "singlestat",
+      "type": "stat",
       "valueFontSize": "80%",
       "valueMaps": [
         {
@@ -327,7 +327,7 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(50, 172, 45, 0.97)"
       ],
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
       "format": "short",
       "gauge": {
         "maxValue": 100,
@@ -390,7 +390,7 @@
       ],
       "thresholds": "",
       "title": "Current insert data",
-      "type": "singlestat",
+      "type": "stat",
       "valueFontSize": "80%",
       "valueMaps": [
         {
@@ -410,7 +410,7 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(50, 172, 45, 0.97)"
       ],
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
       "format": "short",
       "gauge": {
         "maxValue": 100,
@@ -473,7 +473,7 @@
       ],
       "thresholds": "",
       "title": "Current update data",
-      "type": "singlestat",
+      "type": "stat",
       "valueFontSize": "80%",
       "valueMaps": [
         {
@@ -493,7 +493,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -554,7 +554,7 @@
       ],
       "thresholds": "",
       "title": "Max Connections",
-      "type": "singlestat",
+      "type": "stat",
       "valueFontSize": "80%",
       "valueMaps": [
         {
@@ -570,7 +570,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
       "description": "Average user and system CPU time spent in seconds.",
       "fill": 1,
       "fillGradient": 0,
@@ -601,7 +601,6 @@
       "percentage": false,
       "pointradius": 5,
       "points": false,
-      "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
       "stack": false,
@@ -625,7 +624,7 @@
         "sort": 0,
         "value_type": "individual"
       },
-      "type": "graph",
+      "type": "timeseries",
       "xaxis": {
         "buckets": null,
         "mode": "time",
@@ -635,7 +634,7 @@
       },
       "yaxes": [
         {
-          "format": "s",
+          "format": "ms",
           "label": null,
           "logBase": 1,
           "max": null,
@@ -661,7 +660,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
       "description": "Virtual and Resident memory size in bytes, averages over 5 min interval",
       "fill": 1,
       "fillGradient": 0,
@@ -692,21 +691,20 @@
       "percentage": false,
       "pointradius": 5,
       "points": false,
-      "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
       "stack": false,
       "steppedLine": false,
       "targets": [
         {
-          "expr": "avg(rate(process_resident_memory_bytes{release=\"$release\", instance=\"$instance\"}[5m]))",
+          "expr": "avg(process_resident_memory_bytes{release=\"$release\", instance=\"$instance\"})",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "Resident Mem",
           "refId": "A"
         },
         {
-          "expr": "avg(rate(process_virtual_memory_bytes{release=\"$release\", instance=\"$instance\"}[5m]))",
+          "expr": "avg(process_virtual_memory_bytes{release=\"$release\", instance=\"$instance\"})",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "Virtual Mem",
@@ -723,7 +721,7 @@
         "sort": 0,
         "value_type": "individual"
       },
-      "type": "graph",
+      "type": "timeseries",
       "xaxis": {
         "buckets": null,
         "mode": "time",
@@ -760,7 +758,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
       "description": "Number of open file descriptors",
       "fill": 1,
       "fillGradient": 0,
@@ -791,7 +789,6 @@
       "percentage": false,
       "pointradius": 5,
       "points": false,
-      "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
       "stack": false,
@@ -815,7 +812,7 @@
         "sort": 0,
         "value_type": "individual"
       },
-      "type": "graph",
+      "type": "timeseries",
       "xaxis": {
         "buckets": null,
         "mode": "time",
@@ -869,7 +866,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
       "format": "bytes",
       "gauge": {
         "maxValue": 100,
@@ -930,7 +927,7 @@
       ],
       "thresholds": "",
       "title": "Shared Buffers",
-      "type": "singlestat",
+      "type": "stat",
       "valueFontSize": "80%",
       "valueMaps": [
         {
@@ -950,7 +947,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
       "format": "bytes",
       "gauge": {
         "maxValue": 100,
@@ -1011,7 +1008,7 @@
       ],
       "thresholds": "",
       "title": "Effective Cache",
-      "type": "singlestat",
+      "type": "stat",
       "valueFontSize": "80%",
       "valueMaps": [
         {
@@ -1031,7 +1028,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
       "format": "bytes",
       "gauge": {
         "maxValue": 100,
@@ -1092,7 +1089,7 @@
       ],
       "thresholds": "",
       "title": "Maintenance Work Mem",
-      "type": "singlestat",
+      "type": "stat",
       "valueFontSize": "80%",
       "valueMaps": [
         {
@@ -1112,7 +1109,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
       "format": "bytes",
       "gauge": {
         "maxValue": 100,
@@ -1174,7 +1171,7 @@
       ],
       "thresholds": "",
       "title": "Work Mem",
-      "type": "singlestat",
+      "type": "stat",
       "valueFontSize": "80%",
       "valueMaps": [
         {
@@ -1194,7 +1191,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
       "decimals": 1,
       "format": "bytes",
       "gauge": {
@@ -1256,7 +1253,7 @@
       ],
       "thresholds": "",
       "title": "Max WAL Size",
-      "type": "singlestat",
+      "type": "stat",
       "valueFontSize": "80%",
       "valueMaps": [
         {
@@ -1276,7 +1273,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -1337,7 +1334,7 @@
       ],
       "thresholds": "",
       "title": "Random Page Cost",
-      "type": "singlestat",
+      "type": "stat",
       "valueFontSize": "80%",
       "valueMaps": [
         {
@@ -1357,7 +1354,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -1418,7 +1415,7 @@
       ],
       "thresholds": "",
       "title": "Seq Page Cost",
-      "type": "singlestat",
+      "type": "stat",
       "valueFontSize": "80%",
       "valueMaps": [
         {
@@ -1438,7 +1435,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -1499,7 +1496,7 @@
       ],
       "thresholds": "",
       "title": "Max Worker Processes",
-      "type": "singlestat",
+      "type": "stat",
       "valueFontSize": "80%",
       "valueMaps": [
         {
@@ -1519,7 +1516,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -1580,7 +1577,7 @@
       ],
       "thresholds": "",
       "title": "Max Parallel Workers",
-      "type": "singlestat",
+      "type": "stat",
       "valueFontSize": "80%",
       "valueMaps": [
         {
@@ -1609,7 +1606,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1642,7 +1639,6 @@
       "percentage": false,
       "pointradius": 3,
       "points": true,
-      "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
       "stack": false,
@@ -1668,7 +1664,7 @@
         "sort": 0,
         "value_type": "individual"
       },
-      "type": "graph",
+      "type": "timeseries",
       "xaxis": {
         "buckets": null,
         "mode": "time",
@@ -1705,7 +1701,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1736,7 +1732,6 @@
       "percentage": false,
       "pointradius": 5,
       "points": false,
-      "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
       "stack": false,
@@ -1767,7 +1762,7 @@
         "sort": 0,
         "value_type": "individual"
       },
-      "type": "graph",
+      "type": "timeseries",
       "xaxis": {
         "buckets": null,
         "mode": "time",
@@ -1803,7 +1798,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1837,14 +1832,13 @@
       "percentage": false,
       "pointradius": 5,
       "points": false,
-      "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
       "stack": false,
       "steppedLine": false,
       "targets": [
         {
-          "expr": "pg_stat_database_tup_updated{datname=~\"$datname\", instance=~\"$instance\"} != 0",
+          "expr": "irate(pg_stat_database_tup_updated{datname=~\"$datname\", instance=~\"$instance\"}[5m]) != 0",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "{{datname}}",
@@ -1862,7 +1856,7 @@
         "sort": 0,
         "value_type": "individual"
       },
-      "type": "graph",
+      "type": "timeseries",
       "xaxis": {
         "buckets": null,
         "mode": "time",
@@ -1898,7 +1892,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1931,14 +1925,13 @@
       "percentage": false,
       "pointradius": 5,
       "points": false,
-      "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
       "stack": false,
       "steppedLine": false,
       "targets": [
         {
-          "expr": "pg_stat_database_tup_fetched{datname=~\"$datname\", instance=~\"$instance\"} != 0",
+          "expr": "irate(pg_stat_database_tup_fetched{datname=~\"$datname\", instance=~\"$instance\"}[5m]) != 0",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "{{datname}}",
@@ -1956,7 +1949,7 @@
         "sort": 0,
         "value_type": "individual"
       },
-      "type": "graph",
+      "type": "timeseries",
       "xaxis": {
         "buckets": null,
         "mode": "time",
@@ -1992,7 +1985,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -2025,14 +2018,13 @@
       "percentage": false,
       "pointradius": 5,
       "points": false,
-      "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
       "stack": false,
       "steppedLine": false,
       "targets": [
         {
-          "expr": "pg_stat_database_tup_inserted{datname=~\"$datname\", instance=~\"$instance\"} != 0",
+          "expr": "irate(pg_stat_database_tup_inserted{datname=~\"$datname\", instance=~\"$instance\"}[5m]) != 0",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "{{datname}}",
@@ -2050,7 +2042,7 @@
         "sort": 0,
         "value_type": "individual"
       },
-      "type": "graph",
+      "type": "timeseries",
       "xaxis": {
         "buckets": null,
         "mode": "time",
@@ -2086,7 +2078,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
       "decimals": 0,
       "fill": 1,
       "fillGradient": 0,
@@ -2121,7 +2113,6 @@
       "percentage": false,
       "pointradius": 5,
       "points": false,
-      "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
       "stack": false,
@@ -2146,7 +2137,7 @@
         "sort": 0,
         "value_type": "individual"
       },
-      "type": "graph",
+      "type": "timeseries",
       "xaxis": {
         "buckets": null,
         "mode": "time",
@@ -2183,7 +2174,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -2216,14 +2207,13 @@
       "percentage": false,
       "pointradius": 5,
       "points": false,
-      "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
       "stack": false,
       "steppedLine": false,
       "targets": [
         {
-          "expr": "pg_stat_database_tup_returned{datname=~\"$datname\", instance=~\"$instance\"} != 0",
+          "expr": "irate(pg_stat_database_tup_returned{datname=~\"$datname\", instance=~\"$instance\"}[5m]) != 0",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "{{datname}}",
@@ -2241,7 +2231,7 @@
         "sort": 0,
         "value_type": "individual"
       },
-      "type": "graph",
+      "type": "timeseries",
       "xaxis": {
         "buckets": null,
         "mode": "time",
@@ -2277,7 +2267,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -2310,7 +2300,6 @@
       "percentage": false,
       "pointradius": 5,
       "points": false,
-      "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
       "stack": false,
@@ -2335,7 +2324,7 @@
         "sort": 0,
         "value_type": "individual"
       },
-      "type": "graph",
+      "type": "timeseries",
       "xaxis": {
         "buckets": null,
         "mode": "time",
@@ -2371,7 +2360,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -2404,14 +2393,13 @@
       "percentage": false,
       "pointradius": 5,
       "points": false,
-      "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
       "stack": false,
       "steppedLine": false,
       "targets": [
         {
-          "expr": "pg_stat_database_tup_deleted{datname=~\"$datname\", instance=~\"$instance\"} != 0",
+          "expr": "irate(pg_stat_database_tup_deleted{datname=~\"$datname\", instance=~\"$instance\"}[5m]) != 0",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "{{datname}}",
@@ -2429,7 +2417,7 @@
         "sort": 0,
         "value_type": "individual"
       },
-      "type": "graph",
+      "type": "timeseries",
       "xaxis": {
         "buckets": null,
         "mode": "time",
@@ -2465,7 +2453,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
       "decimals": 2,
       "fill": 1,
       "gridPos": {
@@ -2494,7 +2482,6 @@
       "percentage": false,
       "pointradius": 5,
       "points": false,
-      "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
       "stack": false,
@@ -2517,7 +2504,7 @@
         "sort": 0,
         "value_type": "individual"
       },
-      "type": "graph",
+      "type": "timeseries",
       "xaxis": {
         "buckets": null,
         "mode": "time",
@@ -2554,7 +2541,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
       "fill": 1,
       "gridPos": {
         "h": 7,
@@ -2582,7 +2569,6 @@
       "percentage": false,
       "pointradius": 5,
       "points": false,
-      "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
       "stack": false,
@@ -2633,7 +2619,7 @@
         "sort": 0,
         "value_type": "individual"
       },
-      "type": "graph",
+      "type": "timeseries",
       "xaxis": {
         "buckets": null,
         "mode": "time",
@@ -2669,7 +2655,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
       "decimals": 0,
       "fill": 1,
       "gridPos": {
@@ -2698,7 +2684,6 @@
       "percentage": false,
       "pointradius": 5,
       "points": false,
-      "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
       "stack": false,
@@ -2728,7 +2713,7 @@
         "sort": 0,
         "value_type": "individual"
       },
-      "type": "graph",
+      "type": "timeseries",
       "xaxis": {
         "buckets": null,
         "mode": "time",
@@ -2764,7 +2749,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
       "description": "Total amount of data written to temporary files by queries in this database. All temporary files are counted, regardless of why the temporary file was created, and regardless of the log_temp_files setting.",
       "fill": 1,
       "gridPos": {
@@ -2793,7 +2778,6 @@
       "percentage": false,
       "pointradius": 5,
       "points": false,
-      "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
       "stack": false,
@@ -2816,7 +2800,7 @@
         "sort": 0,
         "value_type": "individual"
       },
-      "type": "graph",
+      "type": "timeseries",
       "xaxis": {
         "buckets": null,
         "mode": "time",
@@ -2852,7 +2836,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
       "fill": 1,
       "gridPos": {
         "h": 7,
@@ -2879,7 +2863,6 @@
       "percentage": false,
       "pointradius": 5,
       "points": false,
-      "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
       "stack": false,
@@ -2909,7 +2892,7 @@
         "sort": 0,
         "value_type": "individual"
       },
-      "type": "graph",
+      "type": "timeseries",
       "xaxis": {
         "buckets": null,
         "mode": "time",
@@ -2942,7 +2925,7 @@
     }
   ],
   "refresh": "10s",
-  "schemaVersion": 19,
+  "schemaVersion": 38,
   "style": "dark",
   "tags": [
     "postgres",
@@ -3022,7 +3005,7 @@
       {
         "allValue": null,
         "current": {},
-        "datasource": {"type": "prometheus", "uid": "prometheus"},
+        "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
         "definition": "",
         "hide": 0,
         "includeAll": false,
@@ -3044,7 +3027,7 @@
       {
         "allValue": null,
         "current": {},
-        "datasource": {"type": "prometheus", "uid": "prometheus"},
+        "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
         "definition": "",
         "hide": 0,
         "includeAll": false,
@@ -3066,7 +3049,7 @@
       {
         "allValue": null,
         "current": {},
-        "datasource": {"type": "prometheus", "uid": "prometheus"},
+        "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
         "definition": "",
         "hide": 0,
         "includeAll": false,
@@ -3088,7 +3071,7 @@
       {
         "allValue": null,
         "current": {},
-        "datasource": {"type": "prometheus", "uid": "prometheus"},
+        "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
         "definition": "",
         "hide": 0,
         "includeAll": true,
@@ -3110,7 +3093,7 @@
       {
         "allValue": null,
         "current": {},
-        "datasource": {"type": "prometheus", "uid": "prometheus"},
+        "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
         "definition": "",
         "hide": 0,
         "includeAll": true,

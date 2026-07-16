@@ -30,6 +30,11 @@ scrape_configs:
         replacement: docker
       - target_label: hostname
         replacement: vmi3410257
+    pipeline_stages:
+      - regex:
+          expression: '(?P<level>\w+)\s+.*'
+      - labels:
+          level:
 
   - job_name: journal
     journal:

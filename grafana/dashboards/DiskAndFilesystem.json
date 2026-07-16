@@ -18,8 +18,8 @@
     },
     {
       "type": "panel",
-      "id": "graph",
-      "name": "Graph",
+      "id": "timeseries",
+      "name": "Time Series",
       "version": ""
     },
     {
@@ -30,8 +30,8 @@
     },
     {
       "type": "panel",
-      "id": "singlestat",
-      "name": "Singlestat",
+      "id": "stat",
+      "name": "Stat",
       "version": ""
     }
   ],
@@ -56,7 +56,10 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AXOOM_PROMETHEUS}"
+          },
           "editable": true,
           "error": false,
           "fill": 1,
@@ -80,7 +83,7 @@
           "percentage": false,
           "pointradius": 5,
           "points": false,
-          "renderer": "flot",
+          
           "seriesOverrides": [],
           "spaceLength": 10,
           "span": 10,
@@ -89,273 +92,48 @@
           "targets": [
             {
               "alias": "fetched",
-              "dsType": "prometheus",
               "expr": "sum(irate(pg_stat_database_tup_fetched{datname=~\"$db\",instance=\"$host\"}[5m]))",
               "format": "time_series",
-              "groupBy": [
-                {
-                  "params": [
-                    "$interval"
-                  ],
-                  "type": "time"
-                },
-                {
-                  "params": [
-                    "null"
-                  ],
-                  "type": "fill"
-                }
-              ],
               "intervalFactor": 2,
               "legendFormat": "fetched",
-              "measurement": "postgresql",
-              "policy": "default",
               "refId": "A",
-              "resultFormat": "time_series",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "tup_fetched"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "mean"
-                  },
-                  {
-                    "params": [
-                      "10s"
-                    ],
-                    "type": "non_negative_derivative"
-                  }
-                ]
-              ],
-              "step": 4,
-              "tags": [
-                {
-                  "key": "host",
-                  "operator": "=~",
-                  "value": "/^$host$/"
-                }
-              ]
+              "step": 4
             },
             {
               "alias": "fetched",
-              "dsType": "prometheus",
               "expr": "sum(irate(pg_stat_database_tup_returned{datname=~\"$db\",instance=\"$host\"}[5m]))",
               "format": "time_series",
-              "groupBy": [
-                {
-                  "params": [
-                    "$interval"
-                  ],
-                  "type": "time"
-                },
-                {
-                  "params": [
-                    "null"
-                  ],
-                  "type": "fill"
-                }
-              ],
               "intervalFactor": 2,
               "legendFormat": "returned",
-              "measurement": "postgresql",
-              "policy": "default",
               "refId": "B",
-              "resultFormat": "time_series",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "tup_fetched"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "mean"
-                  },
-                  {
-                    "params": [
-                      "10s"
-                    ],
-                    "type": "non_negative_derivative"
-                  }
-                ]
-              ],
-              "step": 4,
-              "tags": [
-                {
-                  "key": "host",
-                  "operator": "=~",
-                  "value": "/^$host$/"
-                }
-              ]
+              "step": 4
             },
             {
               "alias": "fetched",
-              "dsType": "prometheus",
               "expr": "sum(irate(pg_stat_database_tup_inserted{datname=~\"$db\",instance=\"$host\"}[5m]))",
               "format": "time_series",
-              "groupBy": [
-                {
-                  "params": [
-                    "$interval"
-                  ],
-                  "type": "time"
-                },
-                {
-                  "params": [
-                    "null"
-                  ],
-                  "type": "fill"
-                }
-              ],
               "intervalFactor": 2,
               "legendFormat": "inserted",
-              "measurement": "postgresql",
-              "policy": "default",
               "refId": "C",
-              "resultFormat": "time_series",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "tup_fetched"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "mean"
-                  },
-                  {
-                    "params": [
-                      "10s"
-                    ],
-                    "type": "non_negative_derivative"
-                  }
-                ]
-              ],
-              "step": 4,
-              "tags": [
-                {
-                  "key": "host",
-                  "operator": "=~",
-                  "value": "/^$host$/"
-                }
-              ]
+              "step": 4
             },
             {
               "alias": "fetched",
-              "dsType": "prometheus",
               "expr": "sum(irate(pg_stat_database_tup_updated{datname=~\"$db\",instance=\"$host\"}[5m]))",
               "format": "time_series",
-              "groupBy": [
-                {
-                  "params": [
-                    "$interval"
-                  ],
-                  "type": "time"
-                },
-                {
-                  "params": [
-                    "null"
-                  ],
-                  "type": "fill"
-                }
-              ],
               "intervalFactor": 2,
               "legendFormat": "updated",
-              "measurement": "postgresql",
-              "policy": "default",
               "refId": "D",
-              "resultFormat": "time_series",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "tup_fetched"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "mean"
-                  },
-                  {
-                    "params": [
-                      "10s"
-                    ],
-                    "type": "non_negative_derivative"
-                  }
-                ]
-              ],
-              "step": 4,
-              "tags": [
-                {
-                  "key": "host",
-                  "operator": "=~",
-                  "value": "/^$host$/"
-                }
-              ]
+              "step": 4
             },
             {
               "alias": "fetched",
-              "dsType": "prometheus",
               "expr": "sum(irate(pg_stat_database_tup_deleted{datname=~\"$db\",instance=\"$host\"}[5m]))",
               "format": "time_series",
-              "groupBy": [
-                {
-                  "params": [
-                    "$interval"
-                  ],
-                  "type": "time"
-                },
-                {
-                  "params": [
-                    "null"
-                  ],
-                  "type": "fill"
-                }
-              ],
               "intervalFactor": 2,
               "legendFormat": "deleted",
-              "measurement": "postgresql",
-              "policy": "default",
               "refId": "E",
-              "resultFormat": "time_series",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "tup_fetched"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "mean"
-                  },
-                  {
-                    "params": [
-                      "10s"
-                    ],
-                    "type": "non_negative_derivative"
-                  }
-                ]
-              ],
-              "step": 4,
-              "tags": [
-                {
-                  "key": "host",
-                  "operator": "=~",
-                  "value": "/^$host$/"
-                }
-              ]
+              "step": 4
             }
           ],
           "thresholds": [],
@@ -368,7 +146,7 @@
             "sort": 0,
             "value_type": "cumulative"
           },
-          "type": "graph",
+          "type": "timeseries",
           "xaxis": {
             "buckets": null,
             "mode": "time",
@@ -404,7 +182,10 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(50, 172, 45, 0.97)"
           ],
-          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AXOOM_PROMETHEUS}"
+          },
           "decimals": 0,
           "editable": true,
           "error": false,
@@ -455,62 +236,26 @@
           "tableColumn": "",
           "targets": [
             {
-              "dsType": "prometheus",
               "expr": "sum(irate(pg_stat_database_xact_commit{datname=~\"$db\",instance=\"$host\"}[5m])) + sum(irate(pg_stat_database_xact_rollback{datname=~\"$db\",instance=\"$host\"}[5m]))",
               "format": "time_series",
-              "groupBy": [
-                {
-                  "params": [
-                    "$interval"
-                  ],
-                  "type": "time"
-                },
-                {
-                  "params": [
-                    "null"
-                  ],
-                  "type": "fill"
-                }
-              ],
               "intervalFactor": 2,
-              "measurement": "postgresql",
-              "policy": "default",
               "refId": "A",
-              "resultFormat": "time_series",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "xact_commit"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "mean"
-                  },
-                  {
-                    "params": [
-                      "10s"
-                    ],
-                    "type": "non_negative_derivative"
-                  }
-                ]
-              ],
-              "step": 60,
-              "tags": [
-                {
-                  "key": "host",
-                  "operator": "=~",
-                  "value": "/^$host$/"
-                }
-              ]
+              "step": 60
             }
           ],
-          "thresholds": "",
+          "thresholds": [
+            {
+              "color": "green",
+              "value": null
+            },
+            {
+              "color": "red",
+              "value": 100
+            }
+          ],
           "title": "QPS",
           "transparent": true,
-          "type": "singlestat",
+          "type": "stat",
           "valueFontSize": "80%",
           "valueMaps": [
             {
@@ -526,7 +271,10 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AXOOM_PROMETHEUS}"
+          },
           "decimals": 1,
           "editable": true,
           "error": false,
@@ -552,7 +300,7 @@
           "percentage": false,
           "pointradius": 5,
           "points": false,
-          "renderer": "flot",
+          
           "seriesOverrides": [],
           "spaceLength": 10,
           "span": 6,
@@ -561,263 +309,48 @@
           "targets": [
             {
               "alias": "Buffers Allocated",
-              "dsType": "prometheus",
               "expr": "irate(pg_stat_bgwriter_buffers_alloc{instance='$host'}[5m])",
               "format": "time_series",
-              "groupBy": [
-                {
-                  "params": [
-                    "$interval"
-                  ],
-                  "type": "time"
-                },
-                {
-                  "params": [
-                    "null"
-                  ],
-                  "type": "fill"
-                }
-              ],
               "intervalFactor": 2,
               "legendFormat": "buffers_alloc",
-              "measurement": "postgresql",
-              "policy": "default",
               "refId": "A",
-              "resultFormat": "time_series",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "buffers_alloc"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "mean"
-                  },
-                  {
-                    "params": [],
-                    "type": "difference"
-                  }
-                ]
-              ],
-              "step": 10,
-              "tags": [
-                {
-                  "key": "host",
-                  "operator": "=~",
-                  "value": "/^$host$/"
-                }
-              ]
+              "step": 10
             },
             {
               "alias": "Buffers Allocated",
-              "dsType": "prometheus",
               "expr": "irate(pg_stat_bgwriter_buffers_backend_fsync{instance='$host'}[5m])",
               "format": "time_series",
-              "groupBy": [
-                {
-                  "params": [
-                    "$interval"
-                  ],
-                  "type": "time"
-                },
-                {
-                  "params": [
-                    "null"
-                  ],
-                  "type": "fill"
-                }
-              ],
               "intervalFactor": 2,
               "legendFormat": "buffers_backend_fsync",
-              "measurement": "postgresql",
-              "policy": "default",
               "refId": "B",
-              "resultFormat": "time_series",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "buffers_alloc"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "mean"
-                  },
-                  {
-                    "params": [],
-                    "type": "difference"
-                  }
-                ]
-              ],
-              "step": 10,
-              "tags": [
-                {
-                  "key": "host",
-                  "operator": "=~",
-                  "value": "/^$host$/"
-                }
-              ]
+              "step": 10
             },
             {
               "alias": "Buffers Allocated",
-              "dsType": "prometheus",
               "expr": "irate(pg_stat_bgwriter_buffers_backend{instance='$host'}[5m])",
               "format": "time_series",
-              "groupBy": [
-                {
-                  "params": [
-                    "$interval"
-                  ],
-                  "type": "time"
-                },
-                {
-                  "params": [
-                    "null"
-                  ],
-                  "type": "fill"
-                }
-              ],
               "intervalFactor": 2,
               "legendFormat": "buffers_backend",
-              "measurement": "postgresql",
-              "policy": "default",
               "refId": "C",
-              "resultFormat": "time_series",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "buffers_alloc"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "mean"
-                  },
-                  {
-                    "params": [],
-                    "type": "difference"
-                  }
-                ]
-              ],
-              "step": 10,
-              "tags": [
-                {
-                  "key": "host",
-                  "operator": "=~",
-                  "value": "/^$host$/"
-                }
-              ]
+              "step": 10
             },
             {
               "alias": "Buffers Allocated",
-              "dsType": "prometheus",
               "expr": "irate(pg_stat_bgwriter_buffers_clean{instance='$host'}[5m])",
               "format": "time_series",
-              "groupBy": [
-                {
-                  "params": [
-                    "$interval"
-                  ],
-                  "type": "time"
-                },
-                {
-                  "params": [
-                    "null"
-                  ],
-                  "type": "fill"
-                }
-              ],
               "intervalFactor": 2,
               "legendFormat": "buffers_clean",
-              "measurement": "postgresql",
-              "policy": "default",
               "refId": "D",
-              "resultFormat": "time_series",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "buffers_alloc"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "mean"
-                  },
-                  {
-                    "params": [],
-                    "type": "difference"
-                  }
-                ]
-              ],
-              "step": 10,
-              "tags": [
-                {
-                  "key": "host",
-                  "operator": "=~",
-                  "value": "/^$host$/"
-                }
-              ]
+              "step": 10
             },
             {
               "alias": "Buffers Allocated",
-              "dsType": "prometheus",
               "expr": "irate(pg_stat_bgwriter_buffers_checkpoint{instance='$host'}[5m])",
               "format": "time_series",
-              "groupBy": [
-                {
-                  "params": [
-                    "$interval"
-                  ],
-                  "type": "time"
-                },
-                {
-                  "params": [
-                    "null"
-                  ],
-                  "type": "fill"
-                }
-              ],
               "intervalFactor": 2,
               "legendFormat": "buffers_checkpoint",
-              "measurement": "postgresql",
-              "policy": "default",
               "refId": "E",
-              "resultFormat": "time_series",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "buffers_alloc"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "mean"
-                  },
-                  {
-                    "params": [],
-                    "type": "difference"
-                  }
-                ]
-              ],
-              "step": 10,
-              "tags": [
-                {
-                  "key": "host",
-                  "operator": "=~",
-                  "value": "/^$host$/"
-                }
-              ]
+              "step": 10
             }
           ],
           "thresholds": [],
@@ -830,7 +363,7 @@
             "sort": 0,
             "value_type": "cumulative"
           },
-          "type": "graph",
+          "type": "timeseries",
           "xaxis": {
             "buckets": null,
             "mode": "time",
@@ -862,7 +395,10 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AXOOM_PROMETHEUS}"
+          },
           "editable": true,
           "error": false,
           "fill": 1,
@@ -884,7 +420,7 @@
           "percentage": false,
           "pointradius": 5,
           "points": false,
-          "renderer": "flot",
+          
           "seriesOverrides": [],
           "spaceLength": 10,
           "span": 6,
@@ -893,107 +429,21 @@
           "targets": [
             {
               "alias": "conflicts",
-              "dsType": "prometheus",
               "expr": "sum(rate(pg_stat_database_deadlocks{datname=~\"$db\",instance=\"$host\"}[5m]))",
               "format": "time_series",
-              "groupBy": [
-                {
-                  "params": [
-                    "$interval"
-                  ],
-                  "type": "time"
-                },
-                {
-                  "params": [
-                    "null"
-                  ],
-                  "type": "fill"
-                }
-              ],
               "intervalFactor": 2,
               "legendFormat": "deadlocks",
-              "measurement": "postgresql",
-              "policy": "default",
               "refId": "A",
-              "resultFormat": "time_series",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "conflicts"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "mean"
-                  },
-                  {
-                    "params": [],
-                    "type": "difference"
-                  }
-                ]
-              ],
-              "step": 10,
-              "tags": [
-                {
-                  "key": "host",
-                  "operator": "=~",
-                  "value": "/^$host$/"
-                }
-              ]
+              "step": 10
             },
             {
               "alias": "deadlocks",
-              "dsType": "prometheus",
               "expr": "sum(rate(pg_stat_database_conflicts{datname=~\"$db\",instance=\"$host\"}[5m]))",
               "format": "time_series",
-              "groupBy": [
-                {
-                  "params": [
-                    "$interval"
-                  ],
-                  "type": "time"
-                },
-                {
-                  "params": [
-                    "null"
-                  ],
-                  "type": "fill"
-                }
-              ],
               "intervalFactor": 2,
               "legendFormat": "conflicts",
-              "measurement": "postgresql",
-              "policy": "default",
               "refId": "B",
-              "resultFormat": "time_series",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "deadlocks"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "mean"
-                  },
-                  {
-                    "params": [],
-                    "type": "difference"
-                  }
-                ]
-              ],
-              "step": 10,
-              "tags": [
-                {
-                  "key": "host",
-                  "operator": "=~",
-                  "value": "/^$host$/"
-                }
-              ]
+              "step": 10
             }
           ],
           "thresholds": [],
@@ -1006,7 +456,7 @@
             "sort": 0,
             "value_type": "cumulative"
           },
-          "type": "graph",
+          "type": "timeseries",
           "xaxis": {
             "buckets": null,
             "mode": "time",
@@ -1038,7 +488,10 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AXOOM_PROMETHEUS}"
+          },
           "editable": true,
           "error": false,
           "fill": 1,
@@ -1062,7 +515,7 @@
           "percentage": false,
           "pointradius": 5,
           "points": false,
-          "renderer": "flot",
+          
           "seriesOverrides": [],
           "spaceLength": 10,
           "span": 12,
@@ -1071,58 +524,13 @@
           "targets": [
             {
               "alias": "fetched",
-              "dsType": "prometheus",
               "expr": "pg_locks_count{datname=~\"$db\",instance=\"$host\"}",
               "format": "time_series",
-              "groupBy": [
-                {
-                  "params": [
-                    "$interval"
-                  ],
-                  "type": "time"
-                },
-                {
-                  "params": [
-                    "null"
-                  ],
-                  "type": "fill"
-                }
-              ],
               "intervalFactor": 2,
               "legendFormat": "{{ mode }}",
-              "measurement": "postgresql",
               "metric": "pg_locks_count",
-              "policy": "default",
               "refId": "A",
-              "resultFormat": "time_series",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "tup_fetched"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "mean"
-                  },
-                  {
-                    "params": [
-                      "10s"
-                    ],
-                    "type": "non_negative_derivative"
-                  }
-                ]
-              ],
-              "step": 4,
-              "tags": [
-                {
-                  "key": "host",
-                  "operator": "=~",
-                  "value": "/^$host$/"
-                }
-              ]
+              "step": 4
             }
           ],
           "thresholds": [],
@@ -1135,7 +543,7 @@
             "sort": 0,
             "value_type": "cumulative"
           },
-          "type": "graph",
+          "type": "timeseries",
           "xaxis": {
             "buckets": null,
             "mode": "time",
@@ -1179,7 +587,10 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AXOOM_PROMETHEUS}"
+          },
           "editable": true,
           "error": false,
           "fill": 1,
@@ -1198,10 +609,10 @@
           "linewidth": 2,
           "links": [],
           "nullPointMode": "connected",
-          "percentage": true,
+          "percentage": false,
           "pointradius": 1,
           "points": false,
-          "renderer": "flot",
+          
           "seriesOverrides": [],
           "spaceLength": 10,
           "span": 6,
@@ -1227,7 +638,7 @@
             "sort": 0,
             "value_type": "cumulative"
           },
-          "type": "graph",
+          "type": "timeseries",
           "xaxis": {
             "buckets": null,
             "mode": "time",
@@ -1259,7 +670,10 @@
           "bars": false,
           "dashLength": 10,
           "dashes": false,
-          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AXOOM_PROMETHEUS}"
+          },
           "editable": true,
           "error": false,
           "fill": 1,
@@ -1281,7 +695,7 @@
           "percentage": false,
           "pointradius": 5,
           "points": false,
-          "renderer": "flot",
+          
           "seriesOverrides": [],
           "spaceLength": 10,
           "span": 6,
@@ -1307,7 +721,7 @@
             "sort": 0,
             "value_type": "cumulative"
           },
-          "type": "graph",
+          "type": "timeseries",
           "xaxis": {
             "buckets": null,
             "mode": "time",
@@ -1343,7 +757,7 @@
       "titleSize": "h6"
     }
   ],
-  "schemaVersion": 14,
+  "schemaVersion": 38,
   "style": "dark",
   "tags": [
     "postgres"
@@ -1353,7 +767,10 @@
       {
         "allValue": null,
         "current": {},
-        "datasource": {"type": "prometheus", "uid": "prometheus"},
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_AXOOM_PROMETHEUS}"
+        },
         "hide": 0,
         "includeAll": false,
         "label": null,
@@ -1373,7 +790,10 @@
       {
         "allValue": ".*",
         "current": {},
-        "datasource": {"type": "prometheus", "uid": "prometheus"},
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_AXOOM_PROMETHEUS}"
+        },
         "hide": 0,
         "includeAll": true,
         "label": "db",

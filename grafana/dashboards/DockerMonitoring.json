@@ -12,13 +12,13 @@
   "__requires": [
     {
       "type": "panel",
-      "id": "singlestat",
+      "id": "stat",
       "name": "Singlestat",
       "version": ""
     },
     {
       "type": "panel",
-      "id": "graph",
+      "id": "timeseries",
       "name": "Graph",
       "version": ""
     },
@@ -295,12 +295,12 @@
               "intervalFactor": 2,
               "legendFormat": "",
               "refId": "A",
-              "step": 1800
+              "step": 300
             }
           ],
           "thresholds": "",
           "title": "Uptime",
-          "type": "singlestat",
+          "type": "stat",
           "valueFontSize": "80%",
           "valueMaps": [
             {
@@ -368,15 +368,15 @@
           },
           "targets": [
             {
-              "expr": "count(rate(container_last_seen{name=~\".+\"}[$interval]))",
+              "expr": "count(container_last_seen{name=~\".+\"})",
               "intervalFactor": 2,
               "refId": "A",
-              "step": 1800
+              "step": 300
             }
           ],
           "thresholds": "",
           "title": "Containers",
-          "type": "singlestat",
+          "type": "stat",
           "valueFontSize": "120%",
           "valueMaps": [
             {
@@ -449,12 +449,12 @@
               "hide": false,
               "intervalFactor": 2,
               "refId": "A",
-              "step": 1800
+              "step": 300
             }
           ],
           "thresholds": "0.75, 0.90",
           "title": "Disk space",
-          "type": "singlestat",
+          "type": "stat",
           "valueFontSize": "80%",
           "valueMaps": [
             {
@@ -526,12 +526,12 @@
               "expr": "((node_memory_MemTotal{instance=~\"$server:.*\"} - node_memory_MemAvailable{instance=~\"$server:.*\"}) / node_memory_MemTotal{instance=~\"$server:.*\"}) * 100",
               "intervalFactor": 2,
               "refId": "A",
-              "step": 1800
+              "step": 300
             }
           ],
           "thresholds": "70, 90",
           "title": "Memory",
-          "type": "singlestat",
+          "type": "stat",
           "valueFontSize": "80%",
           "valueMaps": [
             {
@@ -604,12 +604,12 @@
               "intervalFactor": 2,
               "legendFormat": "",
               "refId": "A",
-              "step": 1800
+              "step": 300
             }
           ],
           "thresholds": "400000000",
           "title": "Swap",
-          "type": "singlestat",
+          "type": "stat",
           "valueFontSize": "80%",
           "valueMaps": [
             {
@@ -681,12 +681,12 @@
               "expr": "node_load1{instance=~\"$server:.*\"} / count by(job, instance)(count by(job, instance, cpu)(node_cpu{instance=~\"$server:.*\"}))",
               "intervalFactor": 2,
               "refId": "A",
-              "step": 1800
+              "step": 300
             }
           ],
           "thresholds": "0.8,0.9",
           "title": "Load",
-          "type": "singlestat",
+          "type": "stat",
           "valueFontSize": "80%",
           "valueMaps": [
             {
@@ -695,7 +695,7 @@
               "value": "null"
             }
           ],
-          "valueName": "avg"
+          "valueName": "current"
         }
       ],
       "showTitle": false,
@@ -736,8 +736,7 @@
           "percentage": false,
           "pointradius": 1,
           "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
+                    "seriesOverrides": [],
           "span": 2,
           "stack": false,
           "steppedLine": false,
@@ -747,7 +746,7 @@
               "intervalFactor": 2,
               "legendFormat": "RECEIVED",
               "refId": "A",
-              "step": 600
+              "step": 120
             },
             {
               "expr": "- sum(rate(container_network_transmit_bytes_total{id=\"/\"}[$interval])) by (id)",
@@ -755,7 +754,7 @@
               "intervalFactor": 2,
               "legendFormat": "SENT",
               "refId": "B",
-              "step": 600
+              "step": 120
             }
           ],
           "thresholds": [],
@@ -769,7 +768,7 @@
             "value_type": "cumulative"
           },
           "transparent": false,
-          "type": "graph",
+          "type": "timeseries",
           "xaxis": {
             "mode": "time",
             "name": null,
@@ -822,8 +821,7 @@
           "percentage": false,
           "pointradius": 5,
           "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
+                    "seriesOverrides": [],
           "span": 2,
           "stack": true,
           "steppedLine": false,
@@ -863,7 +861,7 @@
               "legendFormat": "host",
               "metric": "",
               "refId": "C",
-              "step": 600
+              "step": 120
             },
             {
               "expr": "sum(rate(container_cpu_system_seconds_total{name=~\".+\"}[1m])) + sum(rate(container_cpu_system_seconds_total{id=\"/\"}[1m])) + sum(rate(process_cpu_seconds_total[1m]))",
@@ -884,7 +882,7 @@
             "sort": 0,
             "value_type": "cumulative"
           },
-          "type": "graph",
+          "type": "timeseries",
           "xaxis": {
             "mode": "time",
             "name": null,
@@ -937,13 +935,8 @@
             "executionErrorState": "alerting",
             "frequency": "60s",
             "handler": 1,
-            "name": "Panel Title alert",
-            "noDataState": "keep_state",
-            "notifications": [
-              {
-                "id": 1
-              }
-            ]
+            "name": "High System Load",
+            "noDataState": "keep_state"
           },
           "aliasColors": {},
           "bars": false,
@@ -969,8 +962,7 @@
           "percentage": false,
           "pointradius": 5,
           "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
+                    "seriesOverrides": [],
           "span": 2,
           "stack": false,
           "steppedLine": false,
@@ -979,7 +971,7 @@
               "expr": "node_load1{instance=~\"$server:.*\"} / count by(job, instance)(count by(job, instance, cpu)(node_cpu{instance=~\"$server:.*\"}))",
               "intervalFactor": 2,
               "refId": "A",
-              "step": 600
+              "step": 120
             }
           ],
           "thresholds": [
@@ -1000,7 +992,7 @@
             "sort": 0,
             "value_type": "individual"
           },
-          "type": "graph",
+          "type": "timeseries",
           "xaxis": {
             "mode": "time",
             "name": null,
@@ -1054,12 +1046,7 @@
             "frequency": "60s",
             "handler": 1,
             "name": "Free/Used Disk Space alert",
-            "noDataState": "keep_state",
-            "notifications": [
-              {
-                "id": 1
-              }
-            ]
+            "noDataState": "keep_state"
           },
           "aliasColors": {
             "Belegete Festplatte": "#BF1B00",
@@ -1090,8 +1077,7 @@
           "percentage": false,
           "pointradius": 5,
           "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [
+                    "seriesOverrides": [
             {
               "alias": "Used Disk Space",
               "yaxis": 1
@@ -1102,12 +1088,12 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "node_filesystem_size{fstype=\"aufs\"} - node_filesystem_free{fstype=\"aufs\"}",
+              "expr": "node_filesystem_size{fstype=~\"ext4|xfs|overlay\",instance=~\"$server:.*\"} - node_filesystem_free{fstype=~\"ext4|xfs|overlay\",instance=~\"$server:.*\"}",
               "hide": false,
               "intervalFactor": 2,
               "legendFormat": "Used Disk Space",
               "refId": "A",
-              "step": 600
+              "step": 120
             }
           ],
           "thresholds": [
@@ -1128,7 +1114,7 @@
             "sort": 0,
             "value_type": "individual"
           },
-          "type": "graph",
+          "type": "timeseries",
           "xaxis": {
             "mode": "time",
             "name": null,
@@ -1182,12 +1168,7 @@
             "frequency": "60s",
             "handler": 1,
             "name": "Available Memory alert",
-            "noDataState": "keep_state",
-            "notifications": [
-              {
-                "id": 1
-              }
-            ]
+            "noDataState": "keep_state"
           },
           "aliasColors": {
             "Available Memory": "#7EB26D",
@@ -1216,8 +1197,7 @@
           "percentage": false,
           "pointradius": 5,
           "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
+                    "seriesOverrides": [],
           "span": 2,
           "stack": true,
           "steppedLine": false,
@@ -1279,7 +1259,7 @@
               "step": 20
             },
             {
-              "expr": "node_memory_MemAvailable",
+              "expr": "node_memory_MemAvailable_bytes",
               "hide": true,
               "intervalFactor": 2,
               "legendFormat": "Available Memory",
@@ -1287,12 +1267,12 @@
               "step": 20
             },
             {
-              "expr": "node_memory_MemTotal - node_memory_MemAvailable",
+              "expr": "node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes",
               "hide": false,
               "intervalFactor": 2,
               "legendFormat": "Unavailable Memory",
               "refId": "G",
-              "step": 600
+              "step": 120
             },
             {
               "expr": "node_memory_Inactive",
@@ -1319,7 +1299,7 @@
               "step": 30
             },
             {
-              "expr": "node_memory_MemTotal - (node_memory_Active + node_memory_MemFree + node_memory_Inactive)",
+              "expr": "node_memory_MemTotal_bytes - (node_memory_Active + node_memory_MemFree + node_memory_Inactive)",
               "hide": true,
               "intervalFactor": 2,
               "legendFormat": "Unknown",
@@ -1343,7 +1323,7 @@
               "step": 30
             },
             {
-              "expr": "node_memory_Inactive + node_memory_MemFree + node_memory_MemAvailable",
+              "expr": "node_memory_Inactive + node_memory_MemFree + node_memory_MemAvailable_bytes",
               "hide": true,
               "intervalFactor": 2,
               "legendFormat": "",
@@ -1369,7 +1349,7 @@
             "sort": 0,
             "value_type": "individual"
           },
-          "type": "graph",
+          "type": "timeseries",
           "xaxis": {
             "mode": "time",
             "name": null,
@@ -1423,8 +1403,7 @@
           "percentage": false,
           "pointradius": 5,
           "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
+                    "seriesOverrides": [],
           "span": 2,
           "stack": false,
           "steppedLine": false,
@@ -1436,7 +1415,7 @@
               "legendFormat": "OUT on /{{device}}",
               "metric": "node_disk_bytes_read",
               "refId": "A",
-              "step": 600
+              "step": 120
             },
             {
               "expr": "sum(rate(node_disk_bytes_written[$interval])) by (device)",
@@ -1444,7 +1423,7 @@
               "legendFormat": "IN on /{{device}}",
               "metric": "",
               "refId": "B",
-              "step": 600
+              "step": 120
             }
           ],
           "thresholds": [],
@@ -1457,7 +1436,7 @@
             "sort": 0,
             "value_type": "cumulative"
           },
-          "type": "graph",
+          "type": "timeseries",
           "xaxis": {
             "mode": "time",
             "name": null,
@@ -1522,8 +1501,7 @@
           "percentage": false,
           "pointradius": 5,
           "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
+                    "seriesOverrides": [],
           "span": 6,
           "stack": false,
           "steppedLine": false,
@@ -1555,7 +1533,7 @@
             "value_type": "cumulative"
           },
           "transparent": false,
-          "type": "graph",
+          "type": "timeseries",
           "xaxis": {
             "mode": "time",
             "name": null,
@@ -1610,8 +1588,7 @@
           "percentage": false,
           "pointradius": 5,
           "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
+                    "seriesOverrides": [],
           "span": 6,
           "stack": false,
           "steppedLine": false,
@@ -1643,7 +1620,7 @@
             "value_type": "cumulative"
           },
           "transparent": false,
-          "type": "graph",
+          "type": "timeseries",
           "xaxis": {
             "mode": "time",
             "name": null,
@@ -1708,8 +1685,7 @@
           "percentage": false,
           "pointradius": 5,
           "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
+                    "seriesOverrides": [],
           "span": 6,
           "stack": true,
           "steppedLine": false,
@@ -1735,7 +1711,7 @@
             "sort": 0,
             "value_type": "individual"
           },
-          "type": "graph",
+          "type": "timeseries",
           "xaxis": {
             "mode": "time",
             "name": null,
@@ -1799,8 +1775,7 @@
           "percentage": false,
           "pointradius": 5,
           "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
+                    "seriesOverrides": [],
           "span": 6,
           "stack": true,
           "steppedLine": false,
@@ -1832,7 +1807,7 @@
             "sort": 0,
             "value_type": "individual"
           },
-          "type": "graph",
+          "type": "timeseries",
           "xaxis": {
             "mode": "time",
             "name": null,
@@ -1885,8 +1860,7 @@
           "percentage": false,
           "pointradius": 5,
           "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
+                    "seriesOverrides": [],
           "span": 6,
           "stack": true,
           "steppedLine": false,
@@ -1918,7 +1892,7 @@
             "sort": 0,
             "value_type": "individual"
           },
-          "type": "graph",
+          "type": "timeseries",
           "xaxis": {
             "mode": "time",
             "name": null,
@@ -1965,6 +1939,7 @@
           ],
           "editable": true,
           "error": false,
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
           "fontSize": "100%",
           "id": 37,
           "links": [],
@@ -2034,6 +2009,7 @@
           ],
           "editable": true,
           "error": false,
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
           "fontSize": "100%",
           "id": 35,
           "links": [],
@@ -2102,6 +2078,7 @@
           ],
           "editable": true,
           "error": false,
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
           "fontSize": "100%",
           "id": 36,
           "links": [],

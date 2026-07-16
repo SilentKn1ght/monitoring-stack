@@ -120,12 +120,12 @@ groups:
           summary: "Prometheus itself is down"
 
       - alert: GrafanaDown
-        expr: up{job="grafana"} == 0
+        expr: probe_success{instance="https://app-nginx-1/grafana/api/health"} == 0
         for: 1m
         labels:
           severity: critical
         annotations:
-          summary: "Grafana is down"
+          summary: "Grafana is down (blackbox probe)"
 
       - alert: LokiDown
         expr: up{job="loki"} == 0
