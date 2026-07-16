@@ -1,0 +1,15 @@
+.env
+*.log
+prometheus_data/
+grafana_data/
+loki_data/
+loki_wal/
+alertmanager_data/
+backups/
+__pycache__/
+*.pyc
+*.backup-*
+*.bak-*
+*.tz-backup
+*.backup-bot
+*.backup-pathfix

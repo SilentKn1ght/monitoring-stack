@@ -1,0 +1,17 @@
+{{ define "telegram.alert" -}}
+⚠️ <b>{{ .Status | toUpper }}</b> | {{ .CommonLabels.severity | upper }}
+
+<b>Host:</b> {{ .CommonLabels.hostname | default "vmi3410257" }}
+<b>Service:</b> {{ .CommonLabels.service | default "unknown" }}
+<b>Alert:</b> {{ .CommonLabels.alertname }}
+<b>Summary:</b> {{ .CommonAnnotations.summary | default "No details" }}
+
+{{- if .CommonAnnotations.description }}
+<b>Details:</b> {{ .CommonAnnotations.description }}
+{{- end }}
+
+<b>Time:</b> {{ .StartsAt.Format "02 Jan 2006 15:04:05 MST" }}
+{{- if .GeneratorURL }}
+<b>Source:</b> <code>{{ .GeneratorURL }}</code>
+{{- end }}
+{{- end }}

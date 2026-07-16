@@ -1,0 +1,52 @@
+route:
+  group_by: ['alertname', 'severity', 'service']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+  receiver: 'telegram-critical'
+  routes:
+    - matchers:
+        - severity = critical
+      receiver: telegram-critical
+      repeat_interval: 1h
+    - matchers:
+        - severity = warning
+      receiver: telegram-warning
+      repeat_interval: 4h
+
+receivers:
+  - name: telegram-critical
+    telegram_configs:
+      - bot_token: "8390374879:AAGcGC6Bo556yy8_DsmqVzTPSv2-nnBqltA"
+        chat_id: 293220062
+        parse_mode: HTML
+        message: '🔴 ALERT: {{ .CommonLabels.alertname }} ({{ .CommonLabels.severity }})
+
+Host: {{ .CommonLabels.hostname }}
+Service: {{ .CommonLabels.service }}
+Summary: {{ .CommonAnnotations.summary }}'
+        disable_notifications: false
+
+  - name: telegram-warning
+    telegram_configs:
+      - bot_token: "8390374879:AAGcGC6Bo556yy8_DsmqVzTPSv2-nnBqltA"
+        chat_id: 293220062
+        parse_mode: HTML
+        message: '🔴 ALERT: {{ .CommonLabels.alertname }} ({{ .CommonLabels.severity }})
+
+Host: {{ .CommonLabels.hostname }}
+Service: {{ .CommonLabels.service }}
+Summary: {{ .CommonAnnotations.summary }}'
+        disable_notifications: false
+
+inhibit_rules:
+  - source_matchers:
+      - severity = critical
+    target_matchers:
+      - severity = warning
+    equal: ['alertname', 'service']
+
+  - source_matchers:
+      - alertname = PrometheusDown
+    target_matchers:
+      - severity = critical

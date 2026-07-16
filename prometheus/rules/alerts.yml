@@ -1,0 +1,228 @@
+groups:
+  - name: host
+    rules:
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "CPU usage > 85% ({{ $value }}%)"
+          description: "CPU usage on {{ $labels.instance }} is at {{ $value }}%"
+
+      - alert: CriticalCPUUsage
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 95
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "CPU usage > 95% ({{ $value }}%)"
+
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Memory usage > 85% ({{ $value }}%)"
+
+      - alert: CriticalMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 95
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Memory usage > 95% ({{ $value }}%)"
+
+      - alert: HighDiskUsage
+        expr: (1 - (node_filesystem_avail_bytes{mountpoint="/",fstype!~"tmpfs|overlay|squashfs"} / node_filesystem_size_bytes{mountpoint="/",fstype!~"tmpfs|overlay|squashfs"})) * 100 > 90
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Disk usage > 90% ({{ $value }}%)"
+
+      - alert: CriticalDiskUsage
+        expr: (1 - (node_filesystem_avail_bytes{mountpoint="/",fstype!~"tmpfs|overlay|squashfs"} / node_filesystem_size_bytes{mountpoint="/",fstype!~"tmpfs|overlay|squashfs"})) * 100 > 95
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Disk usage > 95% ({{ $value }}%)"
+
+      - alert: HighInodeUsage
+        expr: (1 - (node_filesystem_files_free{mountpoint="/",fstype!~"tmpfs|overlay|squashfs"} / node_filesystem_files{mountpoint="/",fstype!~"tmpfs|overlay|squashfs"})) * 100 > 90
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Inode usage > 90%"
+
+      - alert: HostUnreachable
+        expr: up{job="node-exporter"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Node Exporter is down on {{ $labels.instance }}"
+
+      - alert: HostHighLoadAverage
+        expr: node_load15 > (count(node_cpu_seconds_total{mode="idle"}) by(instance) * 0.8)
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Load average is high ({{ $value }})"
+
+  - name: docker
+    rules:
+      - alert: ContainerStopped
+        expr: time() - container_last_seen{container_label_com_docker_compose_project!=""} > 60
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Container {{ $labels.name }} stopped"
+          description: "Container {{ $labels.name }} from project {{ $labels.container_label_com_docker_compose_project }} stopped"
+
+      - alert: ContainerRestarting
+        expr: rate(container_last_seen[5m]) > 0 and on(instance,name) (container_restart_count > 0)
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Container {{ $labels.name }} is restarting"
+
+      - alert: ContainerHighRestartRate
+        expr: increase(container_restart_count[1h]) > 3
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Container {{ $labels.name }} restarted > 3 times in 1h"
+
+  - name: services
+    rules:
+      - alert: PrometheusTargetDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Prometheus target {{ $labels.job }} ({{ $labels.instance }}) is down"
+
+      - alert: PrometheusDown
+        expr: up{job="prometheus"} == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Prometheus itself is down"
+
+      - alert: GrafanaDown
+        expr: up{job="grafana"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Grafana is down"
+
+      - alert: LokiDown
+        expr: up{job="loki"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Loki is down"
+
+      - alert: NodeExporterDown
+        expr: up{job="node-exporter"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Node Exporter is down"
+
+      - alert: PostgreSQLDown
+        expr: pg_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PostgreSQL is down"
+
+      - alert: PostgreSQLExporterDown
+        expr: up{job="postgres-exporter"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PostgreSQL Exporter is down"
+
+      - alert: SiteLedgerUnavailable
+        expr: probe_success{instance="https://app-nginx-1/api/health"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "SiteLedger API is unreachable"
+
+      - alert: SiteLedgerSlowResponse
+        expr: probe_duration_seconds{instance="https://app-nginx-1/api/health"} > 5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "SiteLedger API response time > 5s"
+
+      - alert: SiteLedgerDown
+        expr: probe_success{instance="https://app-nginx-1/"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "SiteLedger Nginx is down"
+
+  - name: ssl
+    rules:
+      - alert: SSLExpiryWarning
+        expr: probe_ssl_earliest_cert_expiry{job="blackbox-http"} - time() < 604800
+        for: 1h
+        labels:
+          severity: warning
+        annotations:
+          summary: "SSL certificate expires in {{ $value | humanizeDuration }}"
+
+      - alert: SSLExpiryCritical
+        expr: probe_ssl_earliest_cert_expiry{job="blackbox-http"} - time() < 86400
+        for: 1h
+        labels:
+          severity: critical
+        annotations:
+          summary: "SSL certificate expires in < 24h"
+
+  - name: backups
+    rules:
+      - alert: BackupContainerDown
+        expr: backup_health{component='container_running'} == 0
+        for: 15m
+        labels:
+          severity: critical
+        annotations:
+          summary: 'DB Backup container is not running'
+
+      - alert: BackupNotRecent
+        expr: backup_health{component='recent_backup'} == 0
+        for: 1h
+        labels:
+          severity: warning
+        annotations:
+          summary: 'No recent database backup (last 27h)'
+
+      - alert: BackupFileInvalid
+        expr: backup_health{component='latest_backup_valid'} == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: 'No valid backup file found'

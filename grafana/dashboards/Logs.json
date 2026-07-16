@@ -1,0 +1,113 @@
+{
+  "title": "Logs Overview",
+  "uid": "logs-overview",
+  "tags": [
+    "logs",
+    "loki"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 1,
+  "panels": [
+    {
+      "id": 1,
+      "title": "Error Logs (24h)",
+      "type": "logs",
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "targets": [
+        {
+          "expr": "{job=\"docker\"} |= \"error\" |= \"\"",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Application Errors",
+      "type": "timeseries",
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 10
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "targets": [
+        {
+          "expr": "sum by(level) (rate({job=\"docker\", compose_service=\"backend\"} |= \"error\" [5m]))",
+          "legendFormat": "{{level}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Auth Failures",
+      "type": "timeseries",
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 10
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "targets": [
+        {
+          "expr": "rate({job=\"docker\", compose_service=\"backend\"} |= \"login failed\" [5m])",
+          "legendFormat": "failures",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Nginx Errors",
+      "type": "timeseries",
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 10
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "targets": [
+        {
+          "expr": "rate({job=\"docker\", compose_service=\"nginx\"} |= \"error\" [5m])",
+          "legendFormat": "errors",
+          "refId": "A"
+        }
+      ]
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "hostname",
+        "type": "constant",
+        "query": "vmi3410257",
+        "current": {
+          "text": "vmi3410257",
+          "value": "vmi3410257"
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+# SiteLedger backend API
+- targets: ['backend:3000']
+  labels:
+    __metrics_path__: /api/metrics
+    service: siteledger
+    compose_project: app
+    hostname: vmi3410257
+
+# Nifty Trading Bot
+- targets: ['trading-bot:8000']
+  labels:
+    service: trading-bot
+    compose_project: trading-bot
+    hostname: vmi3410257
