@@ -61,7 +61,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_SIGNCL-PROMETHEUS}"},
       "fill": 1,
       "gridPos": {
         "h": 8,
@@ -86,14 +86,13 @@
       "percentage": false,
       "pointradius": 5,
       "points": false,
-      "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
       "stack": false,
       "steppedLine": false,
       "targets": [
         {
-          "expr": "probe_duration_seconds{instance=~\"$target\"}",
+          "expr": "probe_duration_seconds{instance=~\"$target\",job=~\"$job\"}",
           "format": "time_series",
           "interval": "$interval",
           "intervalFactor": 1,
@@ -110,7 +109,7 @@
         "sort": 1,
         "value_type": "individual"
       },
-      "type": "graph",
+      "type": "timeseries",
       "xaxis": {
         "buckets": null,
         "mode": "time",
@@ -164,7 +163,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#299c46"
       ],
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_SIGNCL-PROMETHEUS}"},
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -219,7 +218,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "probe_success{instance=~\"$target\"}",
+          "expr": "probe_success{instance=~\"$target\",job=~\"$job\"}",
           "format": "time_series",
           "interval": "$interval",
           "intervalFactor": 1,
@@ -228,7 +227,7 @@
       ],
       "thresholds": "1,1",
       "title": "Status",
-      "type": "singlestat",
+      "type": "stat",
       "valueFontSize": "80%",
       "valueMaps": [
         {
@@ -254,7 +253,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_SIGNCL-PROMETHEUS}"},
       "fill": 1,
       "gridPos": {
         "h": 6,
@@ -279,14 +278,13 @@
       "percentage": false,
       "pointradius": 5,
       "points": false,
-      "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
       "stack": false,
       "steppedLine": false,
       "targets": [
         {
-          "expr": "probe_http_duration_seconds{instance=~\"$target\"}",
+          "expr": "probe_http_duration_seconds{instance=~\"$target\",job=~\"$job\"}",
           "format": "time_series",
           "interval": "$interval",
           "intervalFactor": 1,
@@ -303,7 +301,7 @@
         "sort": 0,
         "value_type": "individual"
       },
-      "type": "graph",
+      "type": "timeseries",
       "xaxis": {
         "buckets": null,
         "mode": "time",
@@ -339,7 +337,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_SIGNCL-PROMETHEUS}"},
       "fill": 1,
       "gridPos": {
         "h": 6,
@@ -364,7 +362,6 @@
       "percentage": false,
       "pointradius": 5,
       "points": false,
-      "renderer": "flot",
       "repeat": null,
       "seriesOverrides": [],
       "spaceLength": 10,
@@ -372,7 +369,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "probe_duration_seconds{instance=~\"$target\"}",
+          "expr": "probe_duration_seconds{instance=~\"$target\",job=~\"$job\"}",
           "format": "time_series",
           "interval": "$interval",
           "intervalFactor": 1,
@@ -389,7 +386,7 @@
         "sort": 0,
         "value_type": "individual"
       },
-      "type": "graph",
+      "type": "timeseries",
       "xaxis": {
         "buckets": null,
         "mode": "time",
@@ -429,7 +426,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_SIGNCL-PROMETHEUS}"},
       "decimals": 0,
       "format": "none",
       "gauge": {
@@ -485,36 +482,19 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "probe_http_status_code{instance=~\"$target\"}",
+          "expr": "probe_http_status_code{instance=~\"$target\",job=~\"$job\"}",
           "format": "time_series",
           "interval": "$interval",
           "intervalFactor": 1,
           "refId": "A"
         }
       ],
-      "thresholds": "201, 399",
-      "title": "HTTP Status Code",
-      "transparent": false,
-      "type": "singlestat",
-      "valueFontSize": "80%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        },
-        {
-          "op": "=",
-          "text": "YES",
-          "value": "1"
-        },
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "0"
-        }
-      ],
-      "valueName": "current"
+      "thresholds": "200, 399",
+          "title": "HTTP Status Code",
+          "transparent": false,
+          "type": "stat",
+          "valueFontSize": "80%",
+          "valueName": "current"
     },
     {
       "cacheTimeout": null,
@@ -525,7 +505,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_SIGNCL-PROMETHEUS}"},
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -577,15 +557,16 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "probe_http_version{instance=~\"$target\"}",
+          "expr": "probe_http_version{instance=~\"$target\",job=~\"$job\"}",
           "format": "time_series",
+          "interval": "$interval",
           "intervalFactor": 1,
           "refId": "A"
         }
       ],
       "thresholds": "",
       "title": "HTTP Version",
-      "type": "singlestat",
+      "type": "stat",
       "valueFontSize": "80%",
       "valueMaps": [
         {
@@ -605,7 +586,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#299c46"
       ],
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_SIGNCL-PROMETHEUS}"},
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -660,7 +641,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "probe_http_ssl{instance=~\"$target\"}",
+          "expr": "probe_http_ssl{instance=~\"$target\",job=~\"$job\"}",
           "format": "time_series",
           "interval": "$interval",
           "intervalFactor": 1,
@@ -669,7 +650,7 @@
       ],
       "thresholds": "0, 1",
       "title": "SSL",
-      "type": "singlestat",
+      "type": "stat",
       "valueFontSize": "80%",
       "valueMaps": [
         {
@@ -699,7 +680,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#299c46"
       ],
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_SIGNCL-PROMETHEUS}"},
       "decimals": 2,
       "format": "dtdurations",
       "gauge": {
@@ -755,7 +736,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "probe_ssl_earliest_cert_expiry{instance=~\"$target\"} - time()",
+          "expr": "probe_ssl_earliest_cert_expiry{instance=~\"$target\",job=~\"$job\"} - time()",
           "format": "time_series",
           "interval": "$interval",
           "intervalFactor": 1,
@@ -764,28 +745,11 @@
       ],
       "thresholds": "0,1209600",
       "timeFrom": null,
-      "title": "SSL Expiry",
-      "transparent": false,
-      "type": "singlestat",
-      "valueFontSize": "80%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        },
-        {
-          "op": "=",
-          "text": "YES",
-          "value": "1"
-        },
-        {
-          "op": "=",
-          "text": "NO",
-          "value": "0"
-        }
-      ],
-      "valueName": "current"
+          "title": "SSL Expiry",
+          "transparent": false,
+          "type": "stat",
+          "valueFontSize": "80%",
+          "valueName": "current"
     },
     {
       "cacheTimeout": null,
@@ -796,7 +760,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_SIGNCL-PROMETHEUS}"},
       "format": "s",
       "gauge": {
         "maxValue": 100,
@@ -849,7 +813,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "avg(probe_duration_seconds{instance=~\"$target\"})",
+          "expr": "avg(probe_duration_seconds{instance=~\"$target\",job=~\"$job\"})",
           "format": "time_series",
           "interval": "$interval",
           "intervalFactor": 1,
@@ -858,7 +822,7 @@
       ],
       "thresholds": "",
       "title": "Average Probe Duration",
-      "type": "singlestat",
+      "type": "stat",
       "valueFontSize": "80%",
       "valueMaps": [
         {
@@ -878,7 +842,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "${DS_SIGNCL-PROMETHEUS}"},
       "format": "s",
       "gauge": {
         "maxValue": 100,
@@ -932,7 +896,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "avg(probe_dns_lookup_time_seconds{instance=~\"$target\"})",
+          "expr": "avg(probe_dns_lookup_time_seconds{instance=~\"$target\",job=~\"$job\"})",
           "format": "time_series",
           "interval": "$interval",
           "intervalFactor": 1,
@@ -941,7 +905,7 @@
       ],
       "thresholds": "",
       "title": "Average DNS Lookup",
-      "type": "singlestat",
+      "type": "stat",
       "valueFontSize": "80%",
       "valueMaps": [
         {
@@ -1052,7 +1016,7 @@
       {
         "allValue": null,
         "current": {},
-        "datasource": {"type": "prometheus", "uid": "prometheus"},
+        "datasource": {"type": "prometheus", "uid": "${DS_SIGNCL-PROMETHEUS}"},
         "hide": 0,
         "includeAll": true,
         "label": null,
@@ -1065,6 +1029,27 @@
         "sort": 0,
         "tagValuesQuery": "",
         "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": ".+",
+        "current": {},
+        "datasource": {"type": "prometheus", "uid": "${DS_SIGNCL-PROMETHEUS}"},
+        "definition": "",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Job",
+        "multi": true,
+        "name": "job",
+        "options": [],
+        "query": "label_values(probe_success, job)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
         "tagsQuery": "",
         "type": "query",
         "useTags": false

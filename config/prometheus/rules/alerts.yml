@@ -120,12 +120,12 @@ groups:
           summary: "Prometheus itself is down"
 
       - alert: GrafanaDown
-        expr: probe_success{instance="https://app-nginx-1/grafana/api/health"} == 0
+        expr: up{job="grafana"} == 0
         for: 1m
         labels:
           severity: critical
         annotations:
-          summary: "Grafana is down (blackbox probe)"
+          summary: "Grafana is down"
 
       - alert: LokiDown
         expr: up{job="loki"} == 0
@@ -160,7 +160,7 @@ groups:
           summary: "PostgreSQL Exporter is down"
 
       - alert: SiteLedgerUnavailable
-        expr: probe_success{instance="https://app-nginx-1/api/health"} == 0
+        expr: probe_success{instance="https://nginx/api/health"} == 0
         for: 2m
         labels:
           severity: critical
@@ -168,7 +168,7 @@ groups:
           summary: "SiteLedger API is unreachable"
 
       - alert: SiteLedgerSlowResponse
-        expr: probe_duration_seconds{instance="https://app-nginx-1/api/health"} > 5
+        expr: probe_duration_seconds{instance="https://nginx/api/health"} > 5
         for: 5m
         labels:
           severity: warning
@@ -176,7 +176,7 @@ groups:
           summary: "SiteLedger API response time > 5s"
 
       - alert: SiteLedgerDown
-        expr: probe_success{instance="https://app-nginx-1/"} == 0
+        expr: probe_success{instance="https://nginx/"} == 0
         for: 1m
         labels:
           severity: critical
@@ -200,29 +200,3 @@ groups:
           severity: critical
         annotations:
           summary: "SSL certificate expires in < 24h"
-
-  - name: backups
-    rules:
-      - alert: BackupContainerDown
-        expr: backup_health{component='container_running'} == 0
-        for: 15m
-        labels:
-          severity: critical
-        annotations:
-          summary: 'DB Backup container is not running'
-
-      - alert: BackupNotRecent
-        expr: backup_health{component='recent_backup'} == 0
-        for: 1h
-        labels:
-          severity: warning
-        annotations:
-          summary: 'No recent database backup (last 27h)'
-
-      - alert: BackupFileInvalid
-        expr: backup_health{component='latest_backup_valid'} == 0
-        for: 5m
-        labels:
-          severity: critical
-        annotations:
-          summary: 'No valid backup file found'

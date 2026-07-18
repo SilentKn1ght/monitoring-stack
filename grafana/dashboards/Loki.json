@@ -18,8 +18,8 @@
     },
     {
       "type": "panel",
-      "id": "graph",
-      "name": "Graph",
+      "id": "timeseries",
+      "name": "Time series",
       "version": ""
     },
     {
@@ -83,7 +83,7 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {"type": "prometheus", "uid": "loki"},
+      "datasource": {"type": "loki", "uid": "${DS_LOKI}"},
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -117,14 +117,13 @@
       "pluginVersion": "7.1.0",
       "pointradius": 2,
       "points": false,
-      "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
       "stack": false,
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(count_over_time({job=\"$app\"} |= \"$search\" [$__interval]))",
+          "expr": "sum(count_over_time({job=\"$app\"} |= \"$search\" [$__range]))",
           "legendFormat": "",
           "refId": "A"
         }
@@ -133,13 +132,13 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "",
+      "title": "Log Rate",
       "tooltip": {
         "shared": true,
         "sort": 0,
         "value_type": "individual"
       },
-      "type": "graph",
+      "type": "timeseries",
       "xaxis": {
         "buckets": null,
         "mode": "time",
@@ -155,7 +154,7 @@
           "logBase": 1,
           "max": null,
           "min": null,
-          "show": false
+          "show": true
         },
         {
           "$$hashKey": "object:169",
@@ -173,7 +172,7 @@
       }
     },
     {
-      "datasource": {"type": "prometheus", "uid": "loki"},
+      "datasource": {"type": "loki", "uid": "${DS_LOKI}"},
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -204,13 +203,13 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "",
+      "title": "Logs",
       "transparent": true,
       "type": "logs"
     }
   ],
   "refresh": false,
-  "schemaVersion": 26,
+  "schemaVersion": 38,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -218,7 +217,7 @@
       {
         "allValue": null,
         "current": {},
-        "datasource": {"type": "prometheus", "uid": "loki"},
+        "datasource": {"type": "loki", "uid": "${DS_LOKI}"},
         "definition": "label_values(job)",
         "hide": 0,
         "includeAll": false,
