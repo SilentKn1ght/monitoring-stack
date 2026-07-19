@@ -39,19 +39,17 @@ services:
     image: prom/alertmanager:v0.28.0
     container_name: alertmanager
     restart: unless-stopped
+    entrypoint:
+      - /bin/sh
+      - /etc/alertmanager/entrypoint.sh
     environment:
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
-    command:
-      - /bin/sh
-      - -c
-      - |
-        sed "s/__TELEGRAM_BOT_TOKEN__/${TELEGRAM_BOT_TOKEN}/g; s/__TELEGRAM_CHAT_ID__/${TELEGRAM_CHAT_ID}/g" /etc/alertmanager/alertmanager.tmpl > /alertmanager/alertmanager.yml
-        exec /bin/alertmanager --config.file=/alertmanager/alertmanager.yml --storage.path=/alertmanager --web.external-url=https://84.46.248.57/alertmanager/ --web.route-prefix=/ --cluster.listen-address= --log.level=info
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /usr/share/zoneinfo:/usr/share/zoneinfo:ro
       - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.tmpl:ro
+      - ./alertmanager/entrypoint.sh:/etc/alertmanager/entrypoint.sh:ro
       - ./alertmanager/templates:/etc/alertmanager/templates:ro
       - alertmanager_data:/alertmanager
     networks:
