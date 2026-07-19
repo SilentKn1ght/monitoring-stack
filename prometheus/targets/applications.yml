@@ -1,7 +1,7 @@
 # SiteLedger backend API
 - targets: ['backend:3000']
   labels:
-    __metrics_path__: /metrics
+    __metrics_path__: /api/metrics
     service: siteledger
     compose_project: app
     hostname: vmi3410257
