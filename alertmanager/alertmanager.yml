@@ -17,26 +17,18 @@ route:
 receivers:
   - name: telegram-critical
     telegram_configs:
-      - bot_token: "8390374879:AAGcGC6Bo556yy8_DsmqVzTPSv2-nnBqltA"
-        chat_id: 293220062
+      - bot_token: __TELEGRAM_BOT_TOKEN__
+        chat_id: __TELEGRAM_CHAT_ID__
         parse_mode: HTML
-        message: '🔴 ALERT: {{ .CommonLabels.alertname }} ({{ .CommonLabels.severity }})
-
-Host: {{ .CommonLabels.hostname }}
-Service: {{ .CommonLabels.service }}
-Summary: {{ .CommonAnnotations.summary }}'
+        message: '{{ template "telegram.alert" . }}'
         disable_notifications: false
 
   - name: telegram-warning
     telegram_configs:
-      - bot_token: "8390374879:AAGcGC6Bo556yy8_DsmqVzTPSv2-nnBqltA"
-        chat_id: 293220062
+      - bot_token: __TELEGRAM_BOT_TOKEN__
+        chat_id: __TELEGRAM_CHAT_ID__
         parse_mode: HTML
-        message: '🔴 ALERT: {{ .CommonLabels.alertname }} ({{ .CommonLabels.severity }})
-
-Host: {{ .CommonLabels.hostname }}
-Service: {{ .CommonLabels.service }}
-Summary: {{ .CommonAnnotations.summary }}'
+        message: '{{ template "telegram.alert" . }}'
         disable_notifications: false
 
 inhibit_rules:

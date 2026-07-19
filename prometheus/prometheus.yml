@@ -82,6 +82,24 @@ scrape_configs:
         labels:
           service: loki
 
+  - job_name: internal-svc
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+          - http://prometheus:9090/-/healthy
+          - http://alertmanager:9093/-/healthy
+        labels:
+          service: blackbox
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
+
   - job_name: applications
     file_sd_configs:
       - files:

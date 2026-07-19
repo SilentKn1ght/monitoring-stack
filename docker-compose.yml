@@ -1,6 +1,6 @@
 services:
   prometheus:
-    image: prom/prometheus:v2.53.0
+    image: prom/prometheus:v2.55.0
     container_name: prometheus
     restart: unless-stopped
     command:
@@ -36,20 +36,22 @@ services:
         max-file: 3
 
   alertmanager:
-    image: prom/alertmanager:v0.27.0
+    image: prom/alertmanager:v0.28.0
     container_name: alertmanager
     restart: unless-stopped
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
     command:
-      - --config.file=/etc/alertmanager/alertmanager.yml
-      - --storage.path=/alertmanager
-      - --web.external-url=https://84.46.248.57/alertmanager/
-      - --web.route-prefix=/
-      - --cluster.listen-address=
-      - --log.level=info
+      - /bin/sh
+      - -c
+      - |
+        sed "s/__TELEGRAM_BOT_TOKEN__/${TELEGRAM_BOT_TOKEN}/g; s/__TELEGRAM_CHAT_ID__/${TELEGRAM_CHAT_ID}/g" /etc/alertmanager/alertmanager.tmpl > /alertmanager/alertmanager.yml
+        exec /bin/alertmanager --config.file=/alertmanager/alertmanager.yml --storage.path=/alertmanager --web.external-url=https://84.46.248.57/alertmanager/ --web.route-prefix=/ --cluster.listen-address= --log.level=info
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /usr/share/zoneinfo:/usr/share/zoneinfo:ro
-      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.tmpl:ro
       - ./alertmanager/templates:/etc/alertmanager/templates:ro
       - alertmanager_data:/alertmanager
     networks:
@@ -71,7 +73,7 @@ services:
         max-file: 3
 
   grafana:
-    image: grafana/grafana:11.1.0
+    image: grafana/grafana:11.6.1
     container_name: grafana
     restart: unless-stopped
     environment:
@@ -106,7 +108,7 @@ services:
         max-file: 3
 
   loki:
-    image: grafana/loki:3.0.0
+    image: grafana/loki:3.4.2
     container_name: loki
     restart: unless-stopped
     command:
@@ -135,7 +137,7 @@ services:
         max-file: 3
 
   promtail:
-    image: grafana/promtail:3.0.0
+    image: grafana/promtail:3.4.2
     container_name: promtail
     restart: unless-stopped
     command:
@@ -145,6 +147,7 @@ services:
       - /usr/share/zoneinfo:/usr/share/zoneinfo:ro
       - ./promtail/promtail-config.yml:/etc/promtail/promtail-config.yml:ro
       - ./promtail/healthcheck.sh:/healthcheck.sh:ro
+      - ./promtail/positions:/positions
       - /var/log:/var/log:ro
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -217,7 +220,10 @@ services:
       - /:/rootfs:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /sys:/sys:ro
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
       - /var/lib/docker/:/var/lib/docker:ro
+      - /var/lib/docker/image/overlay2:/var/lib/docker/image/overlay2:ro
+      - /var/lib/docker/image/overlayfs:/var/lib/docker/image/overlayfs:ro
     networks:
       - monitoring
     mem_limit: 128m
@@ -236,7 +242,7 @@ services:
         max-file: 3
 
   postgres-exporter:
-    image: prometheuscommunity/postgres-exporter:v0.15.0
+    image: prometheuscommunity/postgres-exporter:v0.16.0
     container_name: postgres-exporter
     restart: unless-stopped
     environment:

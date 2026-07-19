@@ -18,8 +18,8 @@
     },
     {
       "type": "panel",
-        "id": "timeseries",
-        "name": "Timeseries",
+      "id": "timeseries",
+      "name": "Timeseries",
       "version": ""
     },
     {
@@ -57,7 +57,10 @@
   "panels": [
     {
       "collapsed": false,
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -74,7 +77,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -170,7 +176,10 @@
     },
     {
       "collapsed": false,
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -187,7 +196,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -286,7 +298,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -382,7 +397,10 @@
     },
     {
       "collapsed": false,
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -399,7 +417,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -501,7 +522,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
           "custom": {}
@@ -596,7 +620,10 @@
     },
     {
       "collapsed": false,
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -609,7 +636,10 @@
       "type": "row"
     },
     {
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -744,9 +774,21 @@
   "templating": {
     "list": [
       {
+        "name": "DS_PROMETHEUS",
+        "type": "datasource",
+        "query": "prometheus",
+        "current": {
+          "text": "Prometheus",
+          "value": "Prometheus"
+        }
+      },
+      {
         "allValue": ".*",
         "current": {},
-        "datasource": {"type": "prometheus", "uid": "prometheus"},
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
         "definition": "label_values({__name__=~\"container.*\"},instance)",
         "description": null,
         "error": null,
@@ -773,7 +815,10 @@
       {
         "allValue": ".*",
         "current": {},
-        "datasource": {"type": "prometheus", "uid": "prometheus"},
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
         "definition": "label_values({__name__=~\"container.*\", instance=~\"$host\"},name)",
         "description": null,
         "error": null,

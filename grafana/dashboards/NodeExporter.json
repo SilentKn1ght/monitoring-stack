@@ -199,19 +199,7 @@
           "step": 240
         },
         {
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "rate(node_pressure_irq_stalled_seconds_total{instance=\"$node\",job=\"$job\"}[$__rate_interval])",
-          "format": "time_series",
-          "instant": true,
-          "legendFormat": "Irq",
-          "range": false,
-          "refId": "D",
-          "step": 240
-        }
-      ],
-      "title": "Pressure",
-      "type": "bargauge"
+
     },
     {
       "datasource": {
@@ -3267,15 +3255,6 @@
               "legendFormat": "I/O - Full",
               "range": true,
               "refId": "I/O full",
-              "step": 240
-            },
-            {
-              "editorMode": "code",
-              "expr": "rate(node_pressure_irq_stalled_seconds_total{instance=\"$node\",job=\"$job\"}[$__rate_interval])",
-              "format": "time_series",
-              "legendFormat": "IRQ - Full",
-              "range": true,
-              "refId": "A",
               "step": 240
             }
           ],

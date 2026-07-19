@@ -78,16 +78,16 @@ groups:
     rules:
       - alert: ContainerStopped
         expr: time() - container_last_seen{container_label_com_docker_compose_project!=""} > 60
-        for: 1m
+        for: 15m
         labels:
           severity: warning
         annotations:
           summary: "Container {{ $labels.name }} stopped"
-          description: "Container {{ $labels.name }} from project {{ $labels.container_label_com_docker_compose_project }} stopped"
+          description: "Container {{ $labels.name }} from project {{ $labels.container_label_com_docker_compose_project }} stopped. Requires cAdvisor per-container metrics."
 
       - alert: ContainerRestarting
-        expr: rate(container_last_seen[5m]) > 0 and on(instance,name) (container_restart_count > 0)
-        for: 5m
+        expr: rate(container_last_seen[15m]) > 0 and on(instance,name) (container_restart_count > 0)
+        for: 15m
         labels:
           severity: warning
         annotations:
@@ -95,7 +95,7 @@ groups:
 
       - alert: ContainerHighRestartRate
         expr: increase(container_restart_count[1h]) > 3
-        for: 5m
+        for: 15m
         labels:
           severity: critical
         annotations:
@@ -182,6 +182,24 @@ groups:
           severity: critical
         annotations:
           summary: "SiteLedger Nginx is down"
+
+  - name: internal-services
+    rules:
+      - alert: PrometheusInternalUnhealthy
+        expr: probe_success{instance="http://prometheus:9090/-/healthy"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Prometheus internal health check failed"
+
+      - alert: AlertmanagerInternalUnhealthy
+        expr: probe_success{instance="http://alertmanager:9093/-/healthy"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Alertmanager internal health check failed"
 
   - name: ssl
     rules:

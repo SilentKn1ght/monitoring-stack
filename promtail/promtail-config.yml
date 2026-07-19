@@ -3,7 +3,7 @@ server:
   grpc_listen_port: 0
 
 positions:
-  filename: /tmp/positions.yaml
+  filename: /positions/positions.yaml
 
 clients:
   - url: http://loki:3100/loki/api/v1/push
@@ -28,8 +28,6 @@ scrape_configs:
         target_label: image
       - target_label: job
         replacement: docker
-      - target_label: hostname
-        replacement: vmi3410257
     pipeline_stages:
       - regex:
           expression: '(?P<level>\w+)\s+.*'
@@ -47,25 +45,21 @@ scrape_configs:
         target_label: hostname
       - target_label: job
         replacement: journal
-      - target_label: hostname
-        replacement: vmi3410257
+    pipeline_stages:
 
   - job_name: system-logs
     static_configs:
       - targets: [localhost]
         labels:
           job: system
-          hostname: vmi3410257
           __path__: /var/log/syslog
       - targets: [localhost]
         labels:
           job: auth
-          hostname: vmi3410257
           __path__: /var/log/auth.log
       - targets: [localhost]
         labels:
           job: daemon
-          hostname: vmi3410257
           __path__: /var/log/daemon.log
     pipeline_stages:
       - regex:
