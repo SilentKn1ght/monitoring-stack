@@ -1,0 +1,112 @@
+{
+  "title": "Infrastructure",
+  "uid": "infrastructure-overview",
+  "tags": ["infrastructure", "operations"],
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 1,
+  "time": {"from": "now-24h", "to": "now"},
+  "refresh": "30s",
+  "description": "Host-level infrastructure: CPU, memory, disk, network, and Docker summary.",
+  "panels": [
+    {
+      "id": 1, "title": "Host Overview", "type": "row",
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0},
+      "panels": []
+    },
+    {
+      "id": 2, "title": "CPU Usage", "type": "gauge",
+      "gridPos": {"h": 6, "w": 4, "x": 0, "y": 1},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "instance:node_cpu_utilization:rate5m * 100", "legendFormat": "", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100, "thresholds": {"steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 75}, {"color": "red", "value": 90}]}}}
+    },
+    {
+      "id": 3, "title": "Memory Usage", "type": "gauge",
+      "gridPos": {"h": 6, "w": 4, "x": 4, "y": 1},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100", "legendFormat": "", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100, "thresholds": {"steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 80}, {"color": "red", "value": 95}]}}}
+    },
+    {
+      "id": 4, "title": "Disk Usage", "type": "gauge",
+      "gridPos": {"h": 6, "w": 4, "x": 8, "y": 1},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "(1 - (node_filesystem_avail_bytes{mountpoint=\"/\",fstype!~\"tmpfs|overlay|squashfs\"} / node_filesystem_size_bytes{mountpoint=\"/\",fstype!~\"tmpfs|overlay|squashfs\"})) * 100", "legendFormat": "", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100, "thresholds": {"steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 80}, {"color": "red", "value": 95}]}}}
+    },
+    {
+      "id": 5, "title": "Swap Usage", "type": "gauge",
+      "gridPos": {"h": 6, "w": 4, "x": 12, "y": 1},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "((node_memory_SwapTotal_bytes - node_memory_SwapFree_bytes) / node_memory_SwapTotal_bytes) * 100", "legendFormat": "", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100, "thresholds": {"steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 50}, {"color": "red", "value": 80}]}}}
+    },
+    {
+      "id": 6, "title": "System Load", "type": "stat",
+      "gridPos": {"h": 6, "w": 4, "x": 16, "y": 1},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "node_load15", "legendFormat": "15m", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "none", "decimals": 2, "thresholds": {"steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 2}, {"color": "red", "value": 4}]}}}
+    },
+    {
+      "id": 7, "title": "Uptime", "type": "stat",
+      "gridPos": {"h": 6, "w": 4, "x": 20, "y": 1},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "time() - node_boot_time_seconds", "legendFormat": "", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "s"}}
+    },
+    {
+      "id": 8, "title": "CPU (24h)", "type": "timeseries",
+      "gridPos": {"h": 8, "w": 6, "x": 0, "y": 7},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "100 - (avg by(instance)(rate(node_cpu_seconds_total{mode=\"idle\"}[$__rate_interval])) * 100)", "legendFormat": "{{instance}}", "refId": "A"}],
+      "fieldConfig": {"defaults": {"unit": "percent"}}
+    },
+    {
+      "id": 9, "title": "Memory (24h)", "type": "timeseries",
+      "gridPos": {"h": 8, "w": 6, "x": 6, "y": 7},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100", "legendFormat": "{{instance}}", "refId": "A"}],
+      "fieldConfig": {"defaults": {"unit": "percent"}}
+    },
+    {
+      "id": 10, "title": "Disk I/O", "type": "timeseries",
+      "gridPos": {"h": 8, "w": 6, "x": 12, "y": 7},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "rate(node_disk_read_bytes_total[$__rate_interval])", "legendFormat": "Read {{device}}", "refId": "A"}, {"expr": "rate(node_disk_written_bytes_total[$__rate_interval])", "legendFormat": "Write {{device}}", "refId": "B"}],
+      "fieldConfig": {"defaults": {"unit": "Bps"}}
+    },
+    {
+      "id": 11, "title": "Network Traffic", "type": "timeseries",
+      "gridPos": {"h": 8, "w": 6, "x": 18, "y": 7},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "rate(node_network_receive_bytes_total{device!=\"lo\"}[$__rate_interval])", "legendFormat": "RX {{device}}", "refId": "A"}, {"expr": "rate(node_network_transmit_bytes_total{device!=\"lo\"}[$__rate_interval])", "legendFormat": "TX {{device}}", "refId": "B"}],
+      "fieldConfig": {"defaults": {"unit": "Bps"}}
+    },
+    {
+      "id": 12, "title": "Disk Space (24h)", "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 15},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "node_filesystem_size_bytes{fstype!~\"tmpfs|overlay|squashfs\"} - node_filesystem_free_bytes{fstype!~\"tmpfs|overlay|squashfs\"}", "legendFormat": "{{mountpoint}} ({{fstype}})", "refId": "A"}],
+      "fieldConfig": {"defaults": {"unit": "bytes"}}
+    },
+    {
+      "id": 13, "title": "Process Count", "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 15},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "node_procs_running", "legendFormat": "running", "refId": "A"}, {"expr": "node_procs_blocked", "legendFormat": "blocked", "refId": "B"}],
+      "fieldConfig": {"defaults": {"unit": "short"}}
+    }
+  ],
+  "templating": {"list": [
+    {"name": "hostname", "type": "query", "datasource": {"type": "prometheus", "uid": "prometheus"},
+     "query": "label_values(up, hostname)", "multi": false, "includeAll": false,
+     "current": {"text": "vmi3410257", "value": "vmi3410257"}}
+  ]},
+  "links": [
+    {"title": "Executive Overview", "type": "dashboards", "tags": ["operations"]},
+    {"title": "Docker & Containers", "type": "dashboards", "tags": ["docker", "platform"]},
+    {"title": "Node Exporter", "type": "dashboards", "tags": ["node", "debug"]}
+  ]
+}

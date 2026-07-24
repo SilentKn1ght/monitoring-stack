@@ -1,0 +1,80 @@
+{
+  "title": "Node Exporter",
+  "uid": "node-exporter-debug",
+  "tags": ["debug", "node", "infrastructure"],
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 1,
+  "time": {"from": "now-1h", "to": "now"},
+  "refresh": "30s",
+  "description": "Detailed Node Exporter metrics for debugging and capacity planning.",
+  "panels": [
+    {
+      "id": 1, "title": "Host Info", "type": "row",
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0},
+      "panels": []
+    },
+    {
+      "id": 2, "title": "CPU Details", "type": "timeseries",
+      "gridPos": {"h": 7, "w": 8, "x": 0, "y": 1},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "avg by(instance, mode)(rate(node_cpu_seconds_total[5m])) * 100", "legendFormat": "{{mode}}", "refId": "A"}],
+      "fieldConfig": {"defaults": {"unit": "percent"}}
+    },
+    {
+      "id": 3, "title": "Memory Breakdown", "type": "timeseries",
+      "gridPos": {"h": 7, "w": 8, "x": 8, "y": 1},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {"expr": "node_memory_MemTotal_bytes", "legendFormat": "Total", "refId": "A"},
+        {"expr": "node_memory_MemAvailable_bytes", "legendFormat": "Available", "refId": "B"},
+        {"expr": "node_memory_MemFree_bytes", "legendFormat": "Free", "refId": "C"},
+        {"expr": "node_memory_Buffers_bytes", "legendFormat": "Buffers", "refId": "D"},
+        {"expr": "node_memory_Cached_bytes", "legendFormat": "Cached", "refId": "E"}
+      ],
+      "fieldConfig": {"defaults": {"unit": "bytes"}}
+    },
+    {
+      "id": 4, "title": "Disk Details (by device)", "type": "timeseries",
+      "gridPos": {"h": 7, "w": 8, "x": 16, "y": 1},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {"expr": "rate(node_disk_read_bytes_total[$__rate_interval])", "legendFormat": "Read {{device}}", "refId": "A"},
+        {"expr": "rate(node_disk_written_bytes_total[$__rate_interval])", "legendFormat": "Write {{device}}", "refId": "B"}
+      ],
+      "fieldConfig": {"defaults": {"unit": "Bps"}}
+    },
+    {
+      "id": 5, "title": "Network Details", "type": "timeseries",
+      "gridPos": {"h": 7, "w": 8, "x": 0, "y": 8},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {"expr": "rate(node_network_receive_bytes_total{device!=\"lo\"}[$__rate_interval])", "legendFormat": "RX {{device}}", "refId": "A"},
+        {"expr": "rate(node_network_transmit_bytes_total{device!=\"lo\"}[$__rate_interval])", "legendFormat": "TX {{device}}", "refId": "B"}
+      ],
+      "fieldConfig": {"defaults": {"unit": "Bps"}}
+    },
+    {
+      "id": 6, "title": "Filesystem Details", "type": "table",
+      "gridPos": {"h": 7, "w": 8, "x": 8, "y": 8},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "(node_filesystem_size_bytes - node_filesystem_free_bytes) / node_filesystem_size_bytes * 100", "format": "table", "instant": true, "refId": "A"}],
+      "fieldConfig": {"defaults": {"unit": "percent"}}
+    },
+    {
+      "id": 7, "title": "Network Errors", "type": "timeseries",
+      "gridPos": {"h": 7, "w": 8, "x": 16, "y": 8},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {"expr": "rate(node_network_receive_errors_total{device!=\"lo\"}[$__rate_interval])", "legendFormat": "RX errors {{device}}", "refId": "A"},
+        {"expr": "rate(node_network_transmit_errors_total{device!=\"lo\"}[$__rate_interval])", "legendFormat": "TX errors {{device}}", "refId": "B"}
+      ],
+      "fieldConfig": {"defaults": {"unit": "reqps"}}
+    }
+  ],
+  "templating": {"list": [
+    {"name": "instance", "type": "query", "datasource": {"type": "prometheus", "uid": "prometheus"},
+     "query": "label_values(up{job=\"node-exporter\"}, instance)", "multi": false, "includeAll": false,
+     "current": {"text": "node-exporter:9100", "value": "node-exporter:9100"}}
+  ]}
+}

@@ -1,0 +1,148 @@
+{
+  "title": "Monitoring Stack",
+  "uid": "monitoring-stack",
+  "tags": ["platform", "monitoring"],
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 1,
+  "time": {"from": "now-24h", "to": "now"},
+  "refresh": "30s",
+  "description": "Health of the monitoring infrastructure: Prometheus, Alertmanager, Loki, Grafana, exporters.",
+  "panels": [
+    {
+      "id": 1, "title": "Service Health", "type": "row",
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0},
+      "panels": []
+    },
+    {
+      "id": 2, "title": "Prometheus", "type": "stat",
+      "gridPos": {"h": 5, "w": 4, "x": 0, "y": 1},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "up{job=\"prometheus\"}", "legendFormat": "", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "none", "thresholds": {"steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]}}}
+    },
+    {
+      "id": 3, "title": "Alertmanager", "type": "stat",
+      "gridPos": {"h": 5, "w": 4, "x": 4, "y": 1},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "up{job=\"internal-svc\",instance=\"http://alertmanager:9093/-/healthy\"}", "legendFormat": "", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "none", "thresholds": {"steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]}}}
+    },
+    {
+      "id": 4, "title": "Loki", "type": "stat",
+      "gridPos": {"h": 5, "w": 4, "x": 8, "y": 1},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "up{job=\"loki\"}", "legendFormat": "", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "none", "thresholds": {"steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]}}}
+    },
+    {
+      "id": 5, "title": "Grafana", "type": "stat",
+      "gridPos": {"h": 5, "w": 4, "x": 12, "y": 1},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "probe_success{instance=\"https://app-nginx-1/grafana/api/health\"}", "legendFormat": "", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "none", "thresholds": {"steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]}}}
+    },
+    {
+      "id": 6, "title": "Node Exporter", "type": "stat",
+      "gridPos": {"h": 5, "w": 4, "x": 16, "y": 1},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "up{job=\"node-exporter\"}", "legendFormat": "", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "none", "thresholds": {"steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]}}}
+    },
+    {
+      "id": 7, "title": "Total Alerts Firing", "type": "stat",
+      "gridPos": {"h": 5, "w": 4, "x": 20, "y": 1},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "count(ALERTS{alertstate=\"firing\"})", "legendFormat": "", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "short", "thresholds": {"steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 1}, {"color": "red", "value": 3}]}}}
+    },
+    {
+      "id": 8, "title": "Prometheus Targets", "type": "row",
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 6},
+      "panels": []
+    },
+    {
+      "id": 9, "title": "Targets by Job", "type": "table",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 7},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "up", "format": "table", "instant": true, "refId": "A"}],
+      "fieldConfig": {"defaults": {"unit": "none"}, "overrides": [{"matcher": {"id": "byName", "options": "Value"}, "properties": [{"id": "custom.displayMode", "value": "color-background-solid"}, {"id": "color", "value": {"mode": "thresholds"}}, {"id": "thresholds", "value": {"steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]}}]}]}
+    },
+    {
+      "id": 10, "title": "Scrape Duration", "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 7},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "scrape_duration_seconds", "legendFormat": "{{job}}", "refId": "A"}],
+      "fieldConfig": {"defaults": {"unit": "s"}}
+    },
+    {
+      "id": 11, "title": "Prometheus Stats", "type": "row",
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 15},
+      "panels": []
+    },
+    {
+      "id": 12, "title": "TSDB Samples Appended", "type": "timeseries",
+      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 16},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "rate(prometheus_tsdb_samples_appended_total[$__rate_interval])", "legendFormat": "samples/s", "refId": "A"}],
+      "fieldConfig": {"defaults": {"unit": "reqps"}}
+    },
+    {
+      "id": 13, "title": "TSDB Head Series", "type": "timeseries",
+      "gridPos": {"h": 8, "w": 8, "x": 8, "y": 16},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "prometheus_tsdb_head_series", "legendFormat": "series", "refId": "A"}],
+      "fieldConfig": {"defaults": {"unit": "short"}}
+    },
+    {
+      "id": 14, "title": "Go Routines", "type": "timeseries",
+      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 16},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "go_goroutines{job=~\"prometheus|loki\"}", "legendFormat": "{{job}}", "refId": "A"}],
+      "fieldConfig": {"defaults": {"unit": "short"}}
+    },
+    {
+      "id": 15, "title": "Alertmanager", "type": "row",
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 24},
+      "panels": []
+    },
+    {
+      "id": 16, "title": "Alertmanager Alerts", "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 25},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "alertmanager_alerts", "legendFormat": "{{state}}", "refId": "A"}],
+      "fieldConfig": {"defaults": {"unit": "short"}}
+    },
+    {
+      "id": 17, "title": "Alertmanager Notification Failures", "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 25},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "rate(alertmanager_notifications_failed_total[$__rate_interval])", "legendFormat": "failures", "refId": "A"}],
+      "fieldConfig": {"defaults": {"unit": "reqps"}}
+    },
+    {
+      "id": 18, "title": "Loki Stats", "type": "row",
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 33},
+      "panels": []
+    },
+    {
+      "id": 19, "title": "Loki Ingested", "type": "timeseries",
+      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 34},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "rate(loki_ingester_chunks_flushed_total[$__rate_interval])", "legendFormat": "chunks/s", "refId": "A"}],
+      "fieldConfig": {"defaults": {"unit": "reqps"}}
+    },
+    {
+      "id": 20, "title": "Recording Rules", "type": "table",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 34},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "prometheus_rule_group_last_evaluation_timestamp_seconds", "format": "table", "instant": true, "refId": "A"}],
+      "fieldConfig": {"defaults": {"unit": "none"}}
+    }
+  ],
+  "templating": {"list": []},
+  "links": [
+    {"title": "Infrastructure", "type": "dashboards", "tags": ["infrastructure"]},
+    {"title": "Debug", "type": "dashboards", "tags": ["debug"]}
+  ]
+}

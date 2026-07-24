@@ -1,0 +1,126 @@
+{
+  "title": "Executive Overview",
+  "uid": "executive-overview",
+  "tags": ["operations", "overview"],
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 1,
+  "time": {"from": "now-24h", "to": "now"},
+  "refresh": "30s",
+  "description": "Overall system health and application status. Landing page for daily operations.",
+  "panels": [
+    {
+      "id": 1, "title": "Application Health", "type": "row",
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0},
+      "panels": []
+    },
+    {
+      "id": 2, "title": "SiteLedger API", "type": "stat",
+      "gridPos": {"h": 5, "w": 4, "x": 0, "y": 1},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "probe_success{instance=\"https://app-nginx-1/api/health\"}", "legendFormat": "", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "none", "thresholds": {"steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]}}}
+    },
+    {
+      "id": 3, "title": "Trading Bot", "type": "stat",
+      "gridPos": {"h": 5, "w": 4, "x": 4, "y": 1},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "bot_running", "legendFormat": "", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "none", "thresholds": {"steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]}}}
+    },
+    {
+      "id": 4, "title": "PostgreSQL", "type": "stat",
+      "gridPos": {"h": 5, "w": 4, "x": 8, "y": 1},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "pg_up", "legendFormat": "", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "none", "thresholds": {"steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]}}}
+    },
+    {
+      "id": 5, "title": "Nginx", "type": "stat",
+      "gridPos": {"h": 5, "w": 4, "x": 12, "y": 1},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "probe_success{instance=\"https://app-nginx-1/\"}", "legendFormat": "", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "none", "thresholds": {"steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]}}}
+    },
+    {
+      "id": 6, "title": "All Targets Up", "type": "stat",
+      "gridPos": {"h": 5, "w": 4, "x": 16, "y": 1},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "count(up == 1)", "legendFormat": "up", "refId": "A", "instant": true}, {"expr": "count(up == 0)", "legendFormat": "down", "refId": "B", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "short", "thresholds": {"steps": [{"color": "green", "value": null}, {"color": "red", "value": 0}]}}}
+    },
+    {
+      "id": 7, "title": "Active Alerts", "type": "stat",
+      "gridPos": {"h": 5, "w": 4, "x": 20, "y": 1},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "count(ALERTS{alertstate=\"firing\"})", "legendFormat": "", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "short", "thresholds": {"steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 1}, {"color": "red", "value": 3}]}}}
+    },
+    {
+      "id": 8, "title": "Infrastructure Health", "type": "row",
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 6},
+      "panels": []
+    },
+    {
+      "id": 9, "title": "CPU Usage", "type": "gauge",
+      "gridPos": {"h": 6, "w": 4, "x": 0, "y": 7},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "instance:node_cpu_utilization:rate5m * 100", "legendFormat": "", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100, "thresholds": {"steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 75}, {"color": "red", "value": 90}]}}}
+    },
+    {
+      "id": 10, "title": "Memory Usage", "type": "gauge",
+      "gridPos": {"h": 6, "w": 4, "x": 4, "y": 7},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100", "legendFormat": "", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100, "thresholds": {"steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 80}, {"color": "red", "value": 95}]}}}
+    },
+    {
+      "id": 11, "title": "Disk Usage", "type": "gauge",
+      "gridPos": {"h": 6, "w": 4, "x": 8, "y": 7},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "(1 - (node_filesystem_avail_bytes{mountpoint=\"/\",fstype!~\"tmpfs|overlay|squashfs\"} / node_filesystem_size_bytes{mountpoint=\"/\",fstype!~\"tmpfs|overlay|squashfs\"})) * 100", "legendFormat": "", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100, "thresholds": {"steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 80}, {"color": "red", "value": 95}]}}}
+    },
+    {
+      "id": 12, "title": "System Load", "type": "gauge",
+      "gridPos": {"h": 6, "w": 4, "x": 12, "y": 7},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "node_load15 / count(node_cpu_seconds_total{mode=\"system\"}) by (instance)", "legendFormat": "", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "percentunit", "min": 0, "max": 1, "thresholds": {"steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 0.8}, {"color": "red", "value": 0.95}]}}}
+    },
+    {
+      "id": 13, "title": "Running Containers", "type": "stat",
+      "gridPos": {"h": 6, "w": 4, "x": 16, "y": 7},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "count(up{job!=\"prometheus\"})", "legendFormat": "", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "short", "decimals": 0}}
+    },
+    {
+      "id": 14, "title": "SSL Expiry", "type": "stat",
+      "gridPos": {"h": 6, "w": 4, "x": 20, "y": 7},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "min(probe_ssl_earliest_cert_expiry - time())", "legendFormat": "", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "s", "thresholds": {"steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 604800}, {"color": "red", "value": 86400}]}}}
+    },
+    {
+      "id": 15, "title": "Recent Errors", "type": "row",
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 13},
+      "panels": []
+    },
+    {
+      "id": 16, "title": "Error Logs (last 1h)", "type": "logs",
+      "gridPos": {"h": 10, "w": 24, "x": 0, "y": 14},
+      "datasource": {"type": "loki", "uid": "loki"},
+      "targets": [{"expr": "{job=\"docker\"} |= \"error\"", "refId": "A"}],
+      "options": {"showLabels": true, "showTime": true, "sortOrder": "Descending", "wrapLogMessage": true}
+    }
+  ],
+  "templating": {"list": []},
+  "links": [
+    {"title": "SiteLedger", "type": "dashboards", "tags": ["siteledger"]},
+    {"title": "Trading Bot", "type": "dashboards", "tags": ["trading"]},
+    {"title": "Infrastructure", "type": "dashboards", "tags": ["infrastructure"]},
+    {"title": "Logs & Incidents", "type": "dashboards", "tags": ["logs"]}
+  ]
+}

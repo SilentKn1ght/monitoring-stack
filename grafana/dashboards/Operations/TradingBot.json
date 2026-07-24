@@ -1,0 +1,137 @@
+{
+  "title": "Trading Bot Operations",
+  "uid": "trading-bot-overview",
+  "tags": ["trading", "operations"],
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 1,
+  "time": {"from": "now-24h", "to": "now"},
+  "refresh": "30s",
+  "description": "Trading bot execution status, P&L tracking, and trading activity.",
+  "panels": [
+    {
+      "id": 1, "title": "Bot Status", "type": "row",
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0},
+      "panels": []
+    },
+    {
+      "id": 2, "title": "Bot Running", "type": "stat",
+      "gridPos": {"h": 5, "w": 4, "x": 0, "y": 1},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "bot_running", "legendFormat": "", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "none", "thresholds": {"steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]}}}
+    },
+    {
+      "id": 3, "title": "Last Heartbeat", "type": "stat",
+      "gridPos": {"h": 5, "w": 4, "x": 4, "y": 1},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "time() - bot_last_heartbeat_timestamp_seconds", "legendFormat": "", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "s", "thresholds": {"steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 300}, {"color": "red", "value": 900}]}}}
+    },
+    {
+      "id": 4, "title": "Uptime", "type": "stat",
+      "gridPos": {"h": 5, "w": 4, "x": 8, "y": 1},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "bot_uptime_seconds", "legendFormat": "", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "s"}}
+    },
+    {
+      "id": 5, "title": "Heartbeats Sent", "type": "stat",
+      "gridPos": {"h": 5, "w": 4, "x": 12, "y": 1},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "bot_heartbeat_total", "legendFormat": "", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "short"}}
+    },
+    {
+      "id": 6, "title": "Orders Today", "type": "stat",
+      "gridPos": {"h": 5, "w": 4, "x": 16, "y": 1},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "sum(increase(trades_orders_total[24h]))", "legendFormat": "", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "short"}}
+    },
+    {
+      "id": 7, "title": "Open Positions", "type": "stat",
+      "gridPos": {"h": 5, "w": 4, "x": 20, "y": 1},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "trading_open_positions", "legendFormat": "", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "short"}}
+    },
+    {
+      "id": 8, "title": "P&L Tracking", "type": "row",
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 6},
+      "panels": []
+    },
+    {
+      "id": 9, "title": "Daily PnL", "type": "stat",
+      "gridPos": {"h": 5, "w": 4, "x": 0, "y": 7},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "trading_pnl_daily", "legendFormat": "", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "currencyINR", "thresholds": {"steps": [{"color": "red", "value": null}, {"color": "green", "value": 0}]}}}
+    },
+    {
+      "id": 10, "title": "Weekly PnL", "type": "stat",
+      "gridPos": {"h": 5, "w": 4, "x": 4, "y": 7},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "trading_pnl_weekly", "legendFormat": "", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "currencyINR", "thresholds": {"steps": [{"color": "red", "value": null}, {"color": "green", "value": 0}]}}}
+    },
+    {
+      "id": 11, "title": "Monthly PnL", "type": "stat",
+      "gridPos": {"h": 5, "w": 4, "x": 8, "y": 7},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "trading_pnl_monthly", "legendFormat": "", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "currencyINR", "thresholds": {"steps": [{"color": "red", "value": null}, {"color": "green", "value": 0}]}}}
+    },
+    {
+      "id": 12, "title": "Total PnL", "type": "stat",
+      "gridPos": {"h": 5, "w": 4, "x": 12, "y": 7},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "trading_pnl_total", "legendFormat": "", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "currencyINR", "thresholds": {"steps": [{"color": "red", "value": null}, {"color": "green", "value": 0}]}}}
+    },
+    {
+      "id": 13, "title": "Drawdown", "type": "stat",
+      "gridPos": {"h": 5, "w": 4, "x": 16, "y": 7},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "trading_drawdown_percent", "legendFormat": "", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "percent", "thresholds": {"steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 10}, {"color": "red", "value": 20}]}}}
+    },
+    {
+      "id": 14, "title": "Trading Activity", "type": "row",
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 12},
+      "panels": []
+    },
+    {
+      "id": 15, "title": "PnL History (30d)", "type": "timeseries",
+      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 13},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "trading_pnl_daily", "legendFormat": "Daily", "refId": "A"}, {"expr": "trading_pnl_total", "legendFormat": "Total", "refId": "B"}],
+      "fieldConfig": {"defaults": {"unit": "currencyINR"}}
+    },
+    {
+      "id": 16, "title": "Open Positions & Drawdown", "type": "timeseries",
+      "gridPos": {"h": 8, "w": 8, "x": 8, "y": 13},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{"expr": "trading_open_positions", "legendFormat": "Positions", "refId": "A"}, {"expr": "trading_drawdown_percent", "legendFormat": "Drawdown %", "refId": "B"}],
+      "fieldConfig": {"defaults": {"unit": "none"}}
+    },
+    {
+      "id": 17, "title": "Order & Signal Rate", "type": "timeseries",
+      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 13},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {"expr": "sum(rate(trades_orders_total[$__rate_interval])) by (type)", "legendFormat": "order: {{type}}", "refId": "A"},
+        {"expr": "sum(rate(trades_signals_total[$__rate_interval])) by (direction)", "legendFormat": "signal: {{direction}}", "refId": "B"}
+      ],
+      "fieldConfig": {"defaults": {"unit": "reqps"}}
+    }
+  ],
+  "templating": {"list": [
+    {"name": "hostname", "type": "query", "datasource": {"type": "prometheus", "uid": "prometheus"},
+     "query": "label_values(bot_info, hostname)", "multi": false, "includeAll": false,
+     "current": {"text": "vmi3410257", "value": "vmi3410257"}}
+  ]},
+  "links": [
+    {"title": "Executive Overview", "type": "dashboards", "tags": ["operations"]}
+  ]
+}
