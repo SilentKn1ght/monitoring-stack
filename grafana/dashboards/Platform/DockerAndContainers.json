@@ -4,10 +4,10 @@
   "tags": ["platform", "docker"],
   "timezone": "browser",
   "schemaVersion": 38,
-  "version": 1,
+  "version": 2,
   "time": {"from": "now-6h", "to": "now"},
   "refresh": "30s",
-  "description": "Container-level monitoring: resource usage, health, and counts across all Docker containers.",
+  "description": "Per-container resource monitoring via cAdvisor v0.51. All 15 containers detected with CPU and memory metrics. Network is host-level only (per-container network namespace unavailable through containerd).",
   "panels": [
     {
       "id": 1, "title": "Container Overview", "type": "row",
@@ -15,77 +15,76 @@
       "panels": []
     },
     {
-      "id": 2, "title": "Container Count", "type": "stat",
-      "gridPos": {"h": 5, "w": 6, "x": 0, "y": 1},
+      "id": 2, "title": "Running Containers", "type": "stat",
+      "gridPos": {"h": 5, "w": 4, "x": 0, "y": 1},
       "datasource": {"type": "prometheus", "uid": "prometheus"},
-      "targets": [{"expr": "count(up) - 1", "legendFormat": "running", "refId": "A", "instant": true}],
+      "targets": [{"expr": "count(container_cpu_usage_seconds_total{job=\"cadvisor\",id!=\"/\"})", "legendFormat": "", "refId": "A", "instant": true}],
       "fieldConfig": {"defaults": {"unit": "short", "decimals": 0}}
     },
     {
-      "id": 3, "title": "Host CPU Usage", "type": "gauge",
-      "gridPos": {"h": 5, "w": 6, "x": 6, "y": 1},
+      "id": 3, "title": "Total CPU Usage", "type": "gauge",
+      "gridPos": {"h": 5, "w": 5, "x": 4, "y": 1},
       "datasource": {"type": "prometheus", "uid": "prometheus"},
-      "targets": [{"expr": "100 - (avg(rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)", "legendFormat": "", "refId": "A", "instant": true}],
+      "targets": [{"expr": "sum(rate(container_cpu_usage_seconds_total{job=\"cadvisor\",id!=\"/\"}[5m])) * 100", "legendFormat": "", "refId": "A", "instant": true}],
       "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100, "thresholds": {"steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 75}, {"color": "red", "value": 90}]}}}
     },
     {
-      "id": 4, "title": "Host Memory Usage", "type": "gauge",
-      "gridPos": {"h": 5, "w": 6, "x": 12, "y": 1},
+      "id": 4, "title": "Total Container Memory", "type": "stat",
+      "gridPos": {"h": 5, "w": 5, "x": 9, "y": 1},
       "datasource": {"type": "prometheus", "uid": "prometheus"},
-      "targets": [{"expr": "(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100", "legendFormat": "", "refId": "A", "instant": true}],
-      "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100, "thresholds": {"steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 80}, {"color": "red", "value": 95}]}}}
+      "targets": [{"expr": "sum(container_memory_working_set_bytes{job=\"cadvisor\",id!=\"/\"})", "legendFormat": "", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "bytes"}}
     },
     {
-      "id": 5, "title": "Containers Per Service", "type": "table",
-      "gridPos": {"h": 5, "w": 6, "x": 18, "y": 1},
+      "id": 5, "title": "Largest Container", "type": "stat",
+      "gridPos": {"h": 5, "w": 5, "x": 14, "y": 1},
       "datasource": {"type": "prometheus", "uid": "prometheus"},
-      "targets": [{"expr": "count(up) by (job)", "format": "table", "instant": true, "refId": "A", "legendFormat": ""}],
-      "fieldConfig": {"defaults": {"unit": "short"}, "overrides": [{"matcher": {"id": "byName", "options": "Value"}, "properties": [{"id": "custom.displayMode", "value": "color-background-solid"}]}]}
+      "targets": [{"expr": "max(container_memory_working_set_bytes{job=\"cadvisor\",id!=\"/\"})", "legendFormat": "", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "bytes"}}
     },
     {
-      "id": 6, "title": "Container Resource Usage", "type": "row",
+      "id": 6, "title": "Container Usage", "type": "row",
       "gridPos": {"h": 1, "w": 24, "x": 0, "y": 6},
       "panels": []
     },
     {
-      "id": 7, "title": "Container CPU Usage", "type": "timeseries",
+      "id": 7, "title": "Container CPU (by image)", "type": "timeseries",
       "gridPos": {"h": 8, "w": 12, "x": 0, "y": 7},
       "datasource": {"type": "prometheus", "uid": "prometheus"},
-      "targets": [{"expr": "rate(process_cpu_seconds_total{job=\"applications\"}[$__rate_interval]) * 100", "legendFormat": "{{service}}", "refId": "A"}],
+      "targets": [{"expr": "rate(container_cpu_usage_seconds_total{job=\"cadvisor\",id!=\"/\"}[$__rate_interval]) * 100", "legendFormat": "{{image}}", "refId": "A"}],
       "fieldConfig": {"defaults": {"unit": "percent"}}
     },
     {
-      "id": 8, "title": "Container Memory Usage", "type": "timeseries",
+      "id": 8, "title": "Container Memory (by image)", "type": "timeseries",
       "gridPos": {"h": 8, "w": 12, "x": 12, "y": 7},
       "datasource": {"type": "prometheus", "uid": "prometheus"},
-      "targets": [{"expr": "process_resident_memory_bytes{job=\"applications\"}", "legendFormat": "{{service}}", "refId": "A"}],
+      "targets": [{"expr": "container_memory_working_set_bytes{job=\"cadvisor\",id!=\"/\"}", "legendFormat": "{{image}}", "refId": "A"}],
       "fieldConfig": {"defaults": {"unit": "bytes"}}
     },
     {
-      "id": 9, "title": "Container Network", "type": "row",
+      "id": 9, "title": "Container Memory Detail", "type": "row",
       "gridPos": {"h": 1, "w": 24, "x": 0, "y": 15},
       "panels": []
     },
     {
-      "id": 10, "title": "Network Receive (by service)", "type": "timeseries",
+      "id": 10, "title": "Memory Usage Breakdown", "type": "table",
       "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
       "datasource": {"type": "prometheus", "uid": "prometheus"},
-      "targets": [{"expr": "sum(rate(container_network_receive_bytes_total{id=\"/\"}[5m]))", "legendFormat": "Receive", "refId": "A"}],
-      "fieldConfig": {"defaults": {"unit": "Bps"}}
+      "targets": [{"expr": "container_memory_working_set_bytes{job=\"cadvisor\",id!=\"/\"}", "format": "table", "instant": true, "refId": "A"}],
+      "transformations": [{"id": "organize", "options": {"excludeByName": {"__name__": true, "cpu": true, "id": true, "instance": true, "job": true, "container_label_com_docker_engine_bundle_path": true}}}]
     },
     {
-      "id": 11, "title": "Network Transmit (by service)", "type": "timeseries",
+      "id": 11, "title": "Host Network Traffic", "type": "timeseries",
       "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16},
       "datasource": {"type": "prometheus", "uid": "prometheus"},
-      "targets": [{"expr": "sum(rate(container_network_transmit_bytes_total{id=\"/\"}[5m]))", "legendFormat": "Transmit", "refId": "A"}],
+      "targets": [
+        {"expr": "sum(rate(container_network_receive_bytes_total{job=\"cadvisor\",id=\"/\"}[$__rate_interval])) by (interface)", "legendFormat": "RX {{interface}}", "refId": "A"},
+        {"expr": "sum(rate(container_network_transmit_bytes_total{job=\"cadvisor\",id=\"/\"}[$__rate_interval])) by (interface)", "legendFormat": "TX {{interface}}", "refId": "B"}
+      ],
       "fieldConfig": {"defaults": {"unit": "Bps"}}
     }
   ],
-  "templating": {"list": [
-    {"name": "service", "type": "query", "datasource": {"type": "prometheus", "uid": "prometheus"},
-     "query": "label_values(up{job=\"applications\"}, service)", "multi": true, "includeAll": true,
-     "current": {"text": "All", "value": "$__all"}}
-  ]},
+  "templating": {"list": []},
   "links": [
     {"title": "Infrastructure", "type": "dashboards", "tags": ["infrastructure"]},
     {"title": "Monitoring Stack", "type": "dashboards", "tags": ["monitoring"]}

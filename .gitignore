@@ -13,3 +13,6 @@ __pycache__/
 *.tz-backup
 *.backup-bot
 *.backup-pathfix
+
+# Config environment (contains secrets)
+config/.env
