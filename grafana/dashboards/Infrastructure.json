@@ -12,7 +12,7 @@
       "id": 1, "title": "CPU Usage", "type": "gauge",
       "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0},
       "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
-      "targets": [{"expr": "(1 - avg(node_cpu_seconds_total{mode=\"idle\"}) / avg(node_cpu_seconds_total)) * 100", "legendFormat": "CPU", "refId": "A", "instant": true}],
+      "targets": [{"expr": "instance:node_cpu_utilization:rate5m * 100", "legendFormat": "CPU", "refId": "A", "instant": true}],
       "fieldConfig": {"defaults": {"unit": "percent", "thresholds": {"steps": [
         {"color": "green", "value": null}, {"color": "yellow", "value": 80}, {"color": "red", "value": 95}]}}, "overrides": []}
     },
