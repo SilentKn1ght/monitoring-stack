@@ -4,71 +4,67 @@
   "tags": ["logs", "operations"],
   "timezone": "browser",
   "schemaVersion": 38,
-  "version": 1,
+  "version": 2,
   "time": {"from": "now-6h", "to": "now"},
   "refresh": "30s",
-  "description": "Centralized log viewing, error tracking, and incident response.",
+  "description": "Centralized log viewing, error tracking, noisy service detection, and incident response.",
   "panels": [
     {
-      "id": 1, "title": "Log Volume", "type": "row",
+      "id": 1, "title": "Log Volume & Errors", "type": "row",
       "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0},
       "panels": []
     },
     {
       "id": 2, "title": "Log Rate by Service", "type": "timeseries",
-      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 1},
+      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 1},
       "datasource": {"type": "loki", "uid": "loki"},
       "targets": [{"expr": "sum by(compose_service) (rate({job=\"docker\"}[5m]))", "legendFormat": "{{compose_service}}", "refId": "A"}],
       "fieldConfig": {"defaults": {"unit": "reqps"}}
     },
     {
-      "id": 3, "title": "Top Log Producers", "type": "table",
-      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 1},
+      "id": 3, "title": "Error Rate by Service", "type": "timeseries",
+      "gridPos": {"h": 8, "w": 8, "x": 8, "y": 1},
       "datasource": {"type": "loki", "uid": "loki"},
-      "targets": [{"expr": "topk(10, sum by(compose_service) (count_over_time({job=\"docker\"}[1h])))", "legendFormat": "", "refId": "A", "instant": true}],
-      "fieldConfig": {"defaults": {"unit": "short"}}
+      "targets": [{"expr": "sum by(compose_service) (rate({job=\"docker\"} |= \"error\" or {job=\"docker\"} |= \"Error\" or {job=\"docker\"} |= \"ERROR\" [$__rate_interval]))", "legendFormat": "{{compose_service}}", "refId": "A"}],
+      "fieldConfig": {"defaults": {"unit": "reqps"}}
     },
     {
-      "id": 4, "title": "Errors & Warnings", "type": "row",
+      "id": 4, "title": "Top Noisy Services (1h)", "type": "table",
+      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 1},
+      "datasource": {"type": "loki", "uid": "loki"},
+      "targets": [{"expr": "topk(10, sum by(compose_service) (count_over_time({job=\"docker\"}[1h])))", "legendFormat": "", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "short", "displayName": "Log Count"}}
+    },
+    {
+      "id": 5, "title": "Common Exceptions", "type": "row",
       "gridPos": {"h": 1, "w": 24, "x": 0, "y": 9},
       "panels": []
     },
     {
-      "id": 5, "title": "Error Rate by Service", "type": "timeseries",
-      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 10},
+      "id": 6, "title": "Top Error Patterns (1h)", "type": "table",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 10},
       "datasource": {"type": "loki", "uid": "loki"},
-      "targets": [{"expr": "sum by(compose_service) (rate({job=\"docker\"} |= \"error\" [$__rate_interval]))", "legendFormat": "{{compose_service}}", "refId": "A"}],
+      "targets": [{"expr": "topk(10, sum by(pattern) (count_over_time({job=\"docker\"} | pattern \"<_>error<_>\" [1h])))", "legendFormat": "", "refId": "A", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "short"}}
+    },
+    {
+      "id": 7, "title": "Auth Failures & Successes", "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 10},
+      "datasource": {"type": "loki", "uid": "loki"},
+      "targets": [
+        {"expr": "rate({job=\"auth\"} |= \"Failed password\" [$__rate_interval])", "legendFormat": "Failed", "refId": "A"},
+        {"expr": "rate({job=\"auth\"} |= \"Accepted password\" [$__rate_interval])", "legendFormat": "Accepted", "refId": "B"}
+      ],
       "fieldConfig": {"defaults": {"unit": "reqps"}}
     },
     {
-      "id": 6, "title": "Auth Failures", "type": "timeseries",
-      "gridPos": {"h": 8, "w": 8, "x": 8, "y": 10},
-      "datasource": {"type": "loki", "uid": "loki"},
-      "targets": [{"expr": "rate({job=\"auth\"} |= \"Failed password\" [$__rate_interval])", "legendFormat": "failures", "refId": "A"}, {"expr": "rate({job=\"auth\"} |= \"Accepted\" [$__rate_interval])", "legendFormat": "accepted", "refId": "B"}],
-      "fieldConfig": {"defaults": {"unit": "reqps"}}
-    },
-    {
-      "id": 7, "title": "Nginx Error Rate", "type": "timeseries",
-      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 10},
-      "datasource": {"type": "loki", "uid": "loki"},
-      "targets": [{"expr": "rate({job=\"docker\", compose_service=\"nginx\"} |= \"error\" [$__rate_interval])", "legendFormat": "errors", "refId": "A"}],
-      "fieldConfig": {"defaults": {"unit": "reqps"}}
-    },
-    {
-      "id": 8, "title": "Live Logs", "type": "row",
+      "id": 8, "title": "Live Log Viewer", "type": "row",
       "gridPos": {"h": 1, "w": 24, "x": 0, "y": 18},
       "panels": []
     },
     {
-      "id": 9, "title": "Error Logs", "type": "logs",
-      "gridPos": {"h": 12, "w": 12, "x": 0, "y": 19},
-      "datasource": {"type": "loki", "uid": "loki"},
-      "targets": [{"expr": "{job=\"docker\"} |= \"$search\"", "refId": "A"}],
-      "options": {"showLabels": true, "showTime": true, "sortOrder": "Descending", "wrapLogMessage": true}
-    },
-    {
-      "id": 10, "title": "Recent Logs", "type": "logs",
-      "gridPos": {"h": 12, "w": 12, "x": 12, "y": 19},
+      "id": 9, "title": "Filtered Logs", "type": "logs",
+      "gridPos": {"h": 14, "w": 24, "x": 0, "y": 19},
       "datasource": {"type": "loki", "uid": "loki"},
       "targets": [{"expr": "{job=\"$job\"} |= \"$search\"", "refId": "A"}],
       "options": {"showLabels": true, "showTime": true, "sortOrder": "Descending", "wrapLogMessage": true}
@@ -78,8 +74,8 @@
     {"name": "job", "type": "query", "datasource": {"type": "loki", "uid": "loki"},
      "query": "label_values(job)", "multi": false, "includeAll": true,
      "current": {"text": "docker", "value": "docker"}},
-    {"name": "search", "type": "textbox", "query": "", "current": {"text": "error", "value": "error"},
-     "hide": 0, "label": "Search"}
+    {"name": "search", "type": "textbox", "query": "", "current": {"text": "", "value": ""},
+     "hide": 0, "label": "Search Filter"}
   ]},
   "links": [
     {"title": "Executive Overview", "type": "dashboards", "tags": ["operations"]},
