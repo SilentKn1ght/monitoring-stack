@@ -75,7 +75,7 @@
       "id": 9, "title": "Container Health", "type": "table",
       "gridPos": {"h": 8, "w": 24, "x": 0, "y": 24},
       "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
-      "targets": [{"expr": "time() - container_last_seen", "legendFormat": "{{name}}", "refId": "A", "format": "table", "instant": true}],
+      "targets": [{"expr": "time() - container_start_time_seconds{instance=~\"cadvisor:8080\"}", "legendFormat": "container uptime", "refId": "A", "format": "table", "instant": true}],
       "fieldConfig": {"defaults": {"unit": "s"}}
     }
   ],
