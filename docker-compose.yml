@@ -201,25 +201,27 @@ services:
         max-file: 3
 
   cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.49.2
+    image: gcr.io/cadvisor/cadvisor:v0.51.0
     container_name: cadvisor
     restart: unless-stopped
-    entrypoint:
-      - /bin/sh
-      - -c
-      - |
-        ln -sf /var/lib/docker/image/overlay2 /var/lib/docker/image/overlayfs 2>/dev/null || true
-        exec /usr/bin/cadvisor -logtostderr --docker_only=true --docker=unix:///var/run/docker.sock --store_container_labels=true --housekeeping_interval=10s --max_housekeeping_interval=30s --event_storage_event_limit=1000 --event_storage_age_limit=24h
+    privileged: true
+    command:
+      - -logtostderr
+      - --docker_only=true
+      - --docker=unix:///var/run/docker.sock
+      - --store_container_labels=true
+      - --housekeeping_interval=10s
+      - --max_housekeeping_interval=30s
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /usr/share/zoneinfo:/usr/share/zoneinfo:ro
       - /:/rootfs:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/run/docker.sock:/var/run/docker.sock:rw
       - /sys:/sys:ro
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
       - /var/lib/docker/:/var/lib/docker:ro
-      - /var/lib/docker/image/overlay2:/var/lib/docker/image/overlay2:ro
-      - /var/lib/docker/image/overlayfs:/var/lib/docker/image/overlayfs:ro
+      - /var/lib/containerd:/var/lib/containerd:ro
+      - /run/containerd:/run/containerd:ro
     networks:
       - monitoring
     mem_limit: 128m
