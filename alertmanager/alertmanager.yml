@@ -17,7 +17,7 @@ route:
   receivers:
     - name: telegram-critical
       telegram_configs:
-        - bot_token: 8807386304:AAF4_Y7GX5JibvEn5pnHbwWKKxCRmmqXeww
+        - bot_token: 8390374879:AAHbh9rdz-nWaSFfpJQeI9Ri4zKtq3I7N3k
           chat_id: "293220062"
           parse_mode: HTML
           message: '{{ template "telegram.alert" . }}'
@@ -25,7 +25,7 @@ route:
 
     - name: telegram-warning
       telegram_configs:
-        - bot_token: 8807386304:AAF4_Y7GX5JibvEn5pnHbwWKKxCRmmqXeww
+        - bot_token: 8390374879:AAHbh9rdz-nWaSFfpJQeI9Ri4zKtq3I7N3k
           chat_id: "293220062"
           parse_mode: HTML
           message: '{{ template "telegram.alert" . }}'
