@@ -14,22 +14,22 @@ route:
       receiver: telegram-warning
       repeat_interval: 4h
 
-receivers:
-  - name: telegram-critical
-    telegram_configs:
-      - bot_token: __TELEGRAM_BOT_TOKEN__
-        chat_id: __TELEGRAM_CHAT_ID__
-        parse_mode: HTML
-        message: '{{ template "telegram.alert" . }}'
-        disable_notifications: false
+  receivers:
+    - name: telegram-critical
+      telegram_configs:
+        - bot_token: 8807386304:AAF4_Y7GX5JibvEn5pnHbwWKKxCRmmqXeww
+          chat_id: __TELEGRAM_CHAT_ID__
+          parse_mode: HTML
+          message: '{{ template "telegram.alert" . }}'
+          disable_notifications: false
 
-  - name: telegram-warning
-    telegram_configs:
-      - bot_token: __TELEGRAM_BOT_TOKEN__
-        chat_id: __TELEGRAM_CHAT_ID__
-        parse_mode: HTML
-        message: '{{ template "telegram.alert" . }}'
-        disable_notifications: false
+    - name: telegram-warning
+      telegram_configs:
+        - bot_token: 8807386304:AAF4_Y7GX5JibvEn5pnHbwWKKxCRmmqXeww
+          chat_id: __TELEGRAM_CHAT_ID__
+          parse_mode: HTML
+          message: '{{ template "telegram.alert" . }}'
+          disable_notifications: false
 
 inhibit_rules:
   - source_matchers:

@@ -266,6 +266,30 @@ services:
         max-size: 10m
         max-file: 3
 
+  sam-postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.16.0
+    container_name: sam-postgres-exporter
+    restart: unless-stopped
+    environment:
+      - TZ=Asia/Kolkata
+      - DATA_SOURCE_NAME=postgresql://${SAM_POSTGRES_USER:-sam_companion}:${SAM_POSTGRES_PASSWORD}@sam-postgres:5432/${SAM_POSTGRES_DB:-sam_companion}?sslmode=disable
+    networks:
+      - monitoring
+    mem_limit: 64m
+    mem_reservation: 32m
+    cpus: 0.1
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9188/metrics"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 3
+
   blackbox-exporter:
     image: prom/blackbox-exporter:v0.25.0
     container_name: blackbox-exporter
