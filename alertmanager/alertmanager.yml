@@ -18,7 +18,7 @@ route:
     - name: telegram-critical
       telegram_configs:
         - bot_token: 8807386304:AAF4_Y7GX5JibvEn5pnHbwWKKxCRmmqXeww
-          chat_id: __TELEGRAM_CHAT_ID__
+          chat_id: "293220062"
           parse_mode: HTML
           message: '{{ template "telegram.alert" . }}'
           disable_notifications: false
@@ -26,7 +26,7 @@ route:
     - name: telegram-warning
       telegram_configs:
         - bot_token: 8807386304:AAF4_Y7GX5JibvEn5pnHbwWKKxCRmmqXeww
-          chat_id: __TELEGRAM_CHAT_ID__
+          chat_id: "293220062"
           parse_mode: HTML
           message: '{{ template "telegram.alert" . }}'
           disable_notifications: false
