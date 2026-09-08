@@ -39,6 +39,9 @@ scrape_configs:
       - targets: ['postgres-exporter:9187']
         labels:
           service: postgres-exporter
+      - targets: ['sam-postgres-exporter:9187']
+        labels:
+          service: sam-postgres-exporter
 
   - job_name: blackbox-http
     metrics_path: /probe
