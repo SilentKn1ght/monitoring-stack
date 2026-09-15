@@ -6,6 +6,9 @@ route:
   receiver: 'telegram-critical'
   routes:
     - matchers:
+        - alertname = Watchdog
+      receiver: watchdog-null
+    - matchers:
         - severity = critical
       receiver: telegram-critical
       repeat_interval: 1h
@@ -14,22 +17,23 @@ route:
       receiver: telegram-warning
       repeat_interval: 4h
 
-  receivers:
-    - name: telegram-critical
-      telegram_configs:
-        - bot_token: 8390374879:AAHbh9rdz-nWaSFfpJQeI9Ri4zKtq3I7N3k
-          chat_id: "293220062"
-          parse_mode: HTML
-          message: '{{ template "telegram.alert" . }}'
-          disable_notifications: false
+receivers:
+  - name: watchdog-null
+  - name: telegram-critical
+    telegram_configs:
+      - bot_token: __TELEGRAM_BOT_TOKEN__
+        chat_id: __TELEGRAM_CHAT_ID__
+        parse_mode: HTML
+        message: '{{ template "telegram.alert" . }}'
+        disable_notifications: false
 
-    - name: telegram-warning
-      telegram_configs:
-        - bot_token: 8390374879:AAHbh9rdz-nWaSFfpJQeI9Ri4zKtq3I7N3k
-          chat_id: "293220062"
-          parse_mode: HTML
-          message: '{{ template "telegram.alert" . }}'
-          disable_notifications: false
+  - name: telegram-warning
+    telegram_configs:
+      - bot_token: __TELEGRAM_BOT_TOKEN__
+        chat_id: __TELEGRAM_CHAT_ID__
+        parse_mode: HTML
+        message: '{{ template "telegram.alert" . }}'
+        disable_notifications: false
 
 inhibit_rules:
   - source_matchers:

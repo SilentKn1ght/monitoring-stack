@@ -19,3 +19,6 @@ config/.env
 
 # Scrape secrets (e.g. siteledger_metrics_token)
 secrets/
+
+# Promtail runtime state
+promtail/positions/

@@ -76,30 +76,18 @@ groups:
 
   - name: docker
     rules:
-      - alert: ContainerStopped
-        expr: time() - container_last_seen{container_label_com_docker_compose_project!=""} > 60
-        for: 15m
+      # Per-container stop/restart rules removed 2026-08-28 (hermes setup):
+      # cadvisor v0.51 with the systemd cgroup driver exports no compose labels
+      # and no container_restart_count, so the old expressions never matched.
+      # Container coverage is now service-level: up{} and probe_success{} rules
+      # below cover every production container (incl. staging, openerp, promtail).
+      - alert: CadvisorDown
+        expr: up{job="cadvisor"} == 0
+        for: 3m
         labels:
           severity: warning
         annotations:
-          summary: "Container {{ $labels.name }} stopped"
-          description: "Container {{ $labels.name }} from project {{ $labels.container_label_com_docker_compose_project }} stopped. Requires cAdvisor per-container metrics."
-
-      - alert: ContainerRestarting
-        expr: rate(container_last_seen[15m]) > 0 and on(instance,name) (container_restart_count > 0)
-        for: 15m
-        labels:
-          severity: warning
-        annotations:
-          summary: "Container {{ $labels.name }} is restarting"
-
-      - alert: ContainerHighRestartRate
-        expr: increase(container_restart_count[1h]) > 3
-        for: 15m
-        labels:
-          severity: critical
-        annotations:
-          summary: "Container {{ $labels.name }} restarted > 3 times in 1h"
+          summary: "cAdvisor is down - container metrics unavailable"
 
   - name: services
     rules:
@@ -281,3 +269,44 @@ groups:
           severity: warning
         annotations:
           summary: "Project Sam PostgreSQL high connection count ({{ $value }})"
+
+  - name: hermes-additions
+    rules:
+      - alert: Watchdog
+        expr: vector(1)
+        labels:
+          severity: none
+        annotations:
+          summary: "Dead-man switch heartbeat - always firing; its absence means the monitoring pipeline is broken"
+
+      - alert: PromtailDown
+        expr: up{job="promtail"} == 0
+        for: 3m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Promtail is down - log shipping unavailable"
+
+      - alert: OpenERPDown
+        expr: probe_success{instance="http://openerp-app-1:8080/web/login"} == 0
+        for: 3m
+        labels:
+          severity: warning
+        annotations:
+          summary: "OpenERP web is unreachable"
+
+      - alert: SiteLedgerStagingFrontendDown
+        expr: probe_success{instance="http://siteledger-staging-frontend/"} == 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "SiteLedger staging frontend is unreachable"
+
+      - alert: SiteLedgerStagingBackendDown
+        expr: probe_success{instance="http://siteledger-staging-backend:3000/api/health"} == 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "SiteLedger staging backend is unhealthy"
