@@ -254,7 +254,7 @@ groups:
           description: "Probe duration is {{ $value }}s"
 
       - alert: ProjectSamPostgresDown
-        expr: up{job="postgres-exporter"} == 0 and instance=~".*sam-postgres.*"
+        expr: up{job="postgres-exporter", instance=~".*sam-postgres.*"} == 0
         for: 2m
         labels:
           severity: critical
