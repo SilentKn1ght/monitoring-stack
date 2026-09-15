@@ -17,6 +17,9 @@ route:
       receiver: telegram-warning
       repeat_interval: 4h
 
+templates:
+  - '/etc/alertmanager/templates/*.tmpl'
+
 receivers:
   - name: watchdog-null
   - name: telegram-critical
