@@ -1,11 +1,10 @@
 {{ define "telegram.alert" -}}
-⚠️ <b>{{ .Status | toUpper }}</b> | {{ .CommonLabels.severity | upper }}
+⚠️ <b>{{ .Status | toUpper }}</b> | {{ .CommonLabels.severity | toUpper }}
 
-<b>Host:</b> {{ .CommonLabels.hostname | default "vmi3410257" }}
-<b>Service:</b> {{ .CommonLabels.service | default "unknown" }}
+<b>Host:</b> {{ if .CommonLabels.hostname }}{{ .CommonLabels.hostname }}{{ else }}vmi3410257{{ end }}
+<b>Service:</b> {{ if .CommonLabels.service }}{{ .CommonLabels.service }}{{ else }}unknown{{ end }}
 <b>Alert:</b> {{ .CommonLabels.alertname }}
-<b>Summary:</b> {{ .CommonAnnotations.summary | default "No details" }}
-
+<b>Summary:</b> {{ if .CommonAnnotations.summary }}{{ .CommonAnnotations.summary }}{{ else }}No details{{ end }}
 {{- if .CommonAnnotations.description }}
 <b>Details:</b> {{ .CommonAnnotations.description }}
 {{- end }}
