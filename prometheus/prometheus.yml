@@ -121,6 +121,9 @@ scrape_configs:
         replacement: blackbox-exporter:9115
 
   - job_name: applications
+    authorization:
+      type: Bearer
+      credentials_file: /etc/prometheus/secrets/siteledger_metrics_token
     file_sd_configs:
       - files:
           - /etc/prometheus/targets/*.yml

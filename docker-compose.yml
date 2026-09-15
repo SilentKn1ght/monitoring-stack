@@ -16,6 +16,7 @@ services:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ./prometheus/rules:/etc/prometheus/rules:ro
       - ./prometheus/targets:/etc/prometheus/targets:ro
+      - ./secrets:/etc/prometheus/secrets:ro
       - prometheus_data:/prometheus
     networks:
       - monitoring
