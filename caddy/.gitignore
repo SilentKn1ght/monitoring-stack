@@ -1,0 +1,18 @@
+# Generated at deploy time - do not commit.
+# site-assets is a copy of the SiteLedger SPA, which is baked into that
+# project's nginx image. Regenerate with ./sync-site-assets.sh
+site-assets/
+
+# Runtime state and logs
+logs/
+caddy-data/
+caddy-config/
+
+# Local test certificates (self-signed, test only). Real certificates are
+# owned by acme.sh and live outside this repo entirely.
+certs/
+
+# The preflight/test harness used during the migration.
+docker-compose.yml
+docker-compose.preflight.yml
+Caddyfile

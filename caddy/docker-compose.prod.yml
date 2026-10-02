@@ -1,0 +1,75 @@
+# ============================================================================
+# Sam â€” Caddy production ingress
+# ============================================================================
+# Replaces app-nginx-1 as the owner of host ports 80/443.
+# Built from ../build/Dockerfile, which compiles the rate_limit handler in and
+# fails the build if it is absent.
+#
+# Networks are declared external: Caddy JOINS them, never creates or modifies
+# them. Deliberately NOT joined:
+#   project-sam_project_sam_internal  (Sam PostgreSQL + Redis)
+#   monitoring                         (not needed until Sam Control Center ships)
+#   openerp_default, trading-bot_default
+# No database port is published by this service or anything it joins.
+# ============================================================================
+
+name: caddy-migration
+
+services:
+  caddy:
+    build:
+      context: ./build
+      dockerfile: Dockerfile
+    image: caddy-ratelimit:local
+    container_name: caddy-migration-caddy-1
+    restart: unless-stopped
+
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"   # HTTP/3
+
+    volumes:
+      - ./Caddyfile.prod:/etc/caddy/Caddyfile:ro
+      # acme.sh's deployment path. Mounted read-only so Caddy cannot alter them.
+      - /opt/siteledger/app/nginx/certs:/certs:ro
+      # SiteLedger production SPA assets, copied out of the nginx image.
+      - ./site-assets:/srv:ro
+      - caddy-data:/data
+      - caddy-config:/config
+      - ./logs:/var/log/caddy
+
+    networks:
+      - app_internal
+      - app_staging-internal
+
+    mem_limit: 256m
+    mem_reservation: 128m
+    cpus: "0.75"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+    healthcheck:
+      # Must use the production hostname: Caddy matches exact hostnames, and
+      # https://localhost/ is handled by the :443 catch-all, not this vhost.
+      # Probing with Host: localhost would not exercise the real routing.
+      test: ["CMD", "wget", "--no-check-certificate", "--header=Host: siteledger.duckdns.org", "-qO-", "https://127.0.0.1/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+networks:
+  app_internal:
+    external: true
+    name: app_internal
+  app_staging-internal:
+    external: true
+    name: app_staging-internal
+
+volumes:
+  caddy-data:
+  caddy-config:
