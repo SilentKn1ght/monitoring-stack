@@ -21,8 +21,7 @@
 
 {
 	# Admin API on the CONTAINER'S OWN LOOPBACK ONLY. Required so `caddy reload`
-	# works when acme.sh renews a certificate; port 2019 is never published to
-	# the host, so it is unreachable from outside the container.
+	# works when acme.sh renews a certificate; port 2019 is never published.
 	admin localhost:2019
 
 	# Only trust proxy headers from private ranges, so a client cannot spoof
@@ -33,7 +32,25 @@
 }
 
 # ===========================================================================
-# Snippet: the production site body, shared by the named host and the catch-all.
+# ACME HTTP-01 challenge â€” plain HTTP, never redirected
+# ===========================================================================
+# acme.sh validates samstats.duckdns.org with HTTP-01 against this directory.
+# It has to be reachable over HTTP without a redirect, so it is declared as its
+# own :80 site rather than falling through to the redirect below. Serving a
+# well-known path is not a content route.
+:80 {
+	root * /acme-webroot
+	handle /.well-known/acme-challenge/* {
+		file_server
+	}
+	handle {
+		redir https://{host}{uri} 308
+	}
+}
+
+# ===========================================================================
+# Snippet: the SiteLedger production site body, shared by the named host and
+# the catch-all.
 # ===========================================================================
 (production_site) {
 	header {
@@ -50,8 +67,6 @@
 
 	encode zstd gzip
 
-	# login: nginx had 5r/m with burst 3 (effective ceiling ~8/min).
-	# 5/min fixed window is stricter, never weaker.
 	@login path /api/auth/login
 	handle @login {
 		rate_limit {
@@ -76,8 +91,6 @@
 		}
 	}
 
-	# API: nginx 30r/s sustained (burst 50). 30/s fixed window reproduces the
-	# sustained rate and does not add the burst, so it is never more permissive.
 	handle /api/* {
 		rate_limit {
 			zone api {
@@ -101,7 +114,6 @@
 		}
 	}
 
-	# Grafana live channel (WebSocket)
 	handle /grafana/api/live/* {
 		reverse_proxy grafana:3000 {
 			header_up Host {host}
@@ -129,23 +141,117 @@
 }
 
 # ===========================================================================
-# SiteLedger â€” production
+# Sam Control Center â€” samstats.duckdns.org
 # ===========================================================================
-siteledger.duckdns.org {
-	tls /certs/fullchain.pem /certs/privkey.pem
-	import production_site
+# Both upstreams are reached over Docker DNS, not through published host ports:
+#   sam-control-center:8080  the static PWA
+#   sam-backend:8000         the API (auth + read-only observability)
+# Both containers are on the `monitoring` network, which Caddy joins. Neither is
+# published on a public interface, so this vhost is the only way in.
+#
+# Only the Control Center's own routes are proxied. The backend's legacy chat
+# routes are guarded by nothing but an X-User-Id UUID and are deliberately NOT
+# exposed. An allow-list is used rather than a deny-list so a newly added
+# backend route cannot be published by accident.
+samstats.duckdns.org {
+	tls /certs/samstats-fullchain.pem /certs/samstats-privkey.pem
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "same-origin"
+		Permissions-Policy "geolocation=(), microphone=(), camera=()"
+		Cross-Origin-Resource-Policy "same-origin"
+		Cross-Origin-Opener-Policy "same-origin"
+		-Server
+	}
+
+	encode zstd gzip
+
+	request_body {
+		max_size 12MB
+	}
+
+	# --- operator sign-in: password then TOTP ---
+	handle /api/control-center/* {
+		rate_limit {
+			zone cc_auth {
+				key    {http.request.remote.host}
+				events 30
+				window 1s
+			}
+		}
+		# Strip exactly /api. handle_path would strip the whole matched
+		# prefix (/api/control-center) and produce /auth/session, which is
+		# not a backend route.
+		uri strip_prefix /api
+		reverse_proxy sam-backend:8000 {
+			header_up Host {host}
+			header_up X-Real-IP {remote_host}
+			header_up X-Forwarded-For {http.request.header.X-Forwarded-For}
+			header_up X-Forwarded-Proto https
+		}
+	}
+
+	# --- read-only observability ---
+	handle /api/observability/* {
+		rate_limit {
+			zone cc_api {
+				key    {http.request.remote.host}
+				events 60
+				window 1s
+			}
+		}
+		uri strip_prefix /api
+		reverse_proxy sam-backend:8000 {
+			header_up Host {host}
+			header_up X-Real-IP {remote_host}
+			header_up X-Forwarded-For {http.request.header.X-Forwarded-For}
+			header_up X-Forwarded-Proto https
+			transport http {
+				read_timeout 60s
+				write_timeout 60s
+			}
+		}
+	}
+
+	# Any other /api path is a 404, not a pass-through.
+	handle /api/* {
+		respond "Not found" 404
+	}
+
+	# --- the PWA ---
+	handle {
+		reverse_proxy sam-control-center:8080 {
+			header_up Host {host}
+			header_up X-Real-IP {remote_host}
+			header_up X-Forwarded-For {http.request.header.X-Forwarded-For}
+			header_up X-Forwarded-Proto https
+		}
+	}
 }
 
 # ===========================================================================
 # Catch-all â€” parity with nginx `server_name _`
 # ===========================================================================
-# REQUIRED. SiteLedger's deploy.sh verifies `https://localhost/api/health`,
-# and its nginx healthcheck uses the same URL. nginx matched any Host because of
-# `server_name _`; Caddy matches exact hostnames, so without this block those
-# checks return 404 and the deploy pipeline aborts.
+# REQUIRED. SiteLedger's deploy.sh verifies `https://localhost/api/health`, and
+# nginx matched any Host because of `server_name _`; Caddy matches exact
+# hostnames, so without this block that check 404s and the deploy aborts.
+#
+# Any OTHER unknown hostname gets 421 instead of the production app, so a stray
+# Host header cannot pull the production UI off this ingress. Previously the
+# catch-all served the SiteLedger certificate and UI for every hostname, which
+# is what made samstats.duckdns.org present a mismatched certificate.
 :443 {
 	tls /certs/fullchain.pem /certs/privkey.pem
-	import production_site
+
+	@known host siteledger.duckdns.org siteledgerstaging.duckdns.org samstats.duckdns.org localhost 127.0.0.1
+	handle @known {
+		import production_site
+	}
+
+	respond "Misdirected Request" 421
 }
 
 # ===========================================================================
