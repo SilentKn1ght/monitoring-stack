@@ -20,8 +20,15 @@
 # ============================================================================
 
 {
-	# Admin API on the CONTAINER'S OWN LOOPBACK ONLY. Required so `caddy reload`
-	# works when acme.sh renews a certificate; port 2019 is never published.
+	# Admin API, bound to the CONTAINER'S OWN LOOPBACK ONLY and never published,
+	# so nothing outside the container can reach it. It is kept enabled for
+	# operational config reloads only.
+	#
+	# It is NOT what picks up a renewed certificate. Caddy caches PEM certs by
+	# path, and `caddy reload` does not re-read them - proven by swapping the
+	# file and reloading, after which Caddy still served the old certificate.
+	# Renewal therefore relies on the acme.sh Le_ReloadCmd, which is
+	# `docker restart caddy-migration-caddy-1`. See certificates.md.
 	admin localhost:2019
 
 	# Only trust proxy headers from private ranges, so a client cannot spoof
