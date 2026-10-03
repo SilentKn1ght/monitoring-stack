@@ -192,7 +192,7 @@ groups:
   - name: ssl
     rules:
       - alert: SSLExpiryWarning
-        expr: probe_ssl_earliest_cert_expiry{job="blackbox-http"} - time() < 604800
+        expr: probe_ssl_earliest_cert_expiry{job=~"blackbox-http|blackbox-tls"} - time() < 604800
         for: 1h
         labels:
           severity: warning
@@ -200,7 +200,7 @@ groups:
           summary: "SSL certificate expires in {{ $value | humanizeDuration }}"
 
       - alert: SSLExpiryCritical
-        expr: probe_ssl_earliest_cert_expiry{job="blackbox-http"} - time() < 86400
+        expr: probe_ssl_earliest_cert_expiry{job=~"blackbox-http|blackbox-tls"} - time() < 86400
         for: 1h
         labels:
           severity: critical

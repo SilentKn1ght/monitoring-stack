@@ -62,6 +62,32 @@ scrape_configs:
       - target_label: __address__
         replacement: blackbox-exporter:9115
 
+  # Public TLS endpoints, verified end-to-end through DNS and the ingress.
+  # Uses tls_strict (no insecure_skip_verify), so this also catches a broken
+  # chain or a hostname/certificate mismatch — the failure mode that made
+  # samstats.duckdns.org present the SiteLedger certificate.
+  - job_name: blackbox-tls
+    metrics_path: /probe
+    params:
+      module: [tls_strict]
+    static_configs:
+      - targets: ['https://samstats.duckdns.org/']
+        labels:
+          service: sam-control-center
+      - targets: ['https://siteledger.duckdns.org/']
+        labels:
+          service: siteledger
+      - targets: ['https://siteledgerstaging.duckdns.org/']
+        labels:
+          service: siteledger-staging
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
+
   - job_name: blackbox-icmp
     metrics_path: /probe
     params:

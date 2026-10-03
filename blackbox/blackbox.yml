@@ -16,6 +16,38 @@ modules:
       tls_config:
         insecure_skip_verify: true
 
+  # ---------------------------------------------------------------------
+  # tls_strict — added for the Caddy migration.
+  #
+  # http_2xx uses insecure_skip_verify: true, which is right for "is the app
+  # answering" but wrong for certificate monitoring: a broken chain, an expired
+  # cert or a hostname mismatch would all still pass. This module verifies the
+  # chain properly and requires TLS, so probe_ssl_earliest_cert_expiry is
+  # backed by a real handshake rather than a skipped one.
+  #
+  # It is used against the public hostnames, so it also proves that DNS, the
+  # ingress and the served certificate agree — which is exactly what broke when
+  # samstats.duckdns.org was answering with the SiteLedger certificate.
+  # ---------------------------------------------------------------------
+  tls_strict:
+    prober: http
+    http:
+      preferred_ip_protocol: ip4
+      method: GET
+      valid_status_codes:
+        - 200
+        - 204
+        - 301
+        - 302
+        - 401
+        - 403
+        - 404
+      no_follow_redirects: true
+      fail_if_ssl: false
+      fail_if_not_ssl: true
+      tls_config:
+        insecure_skip_verify: false
+
   icmp:
     prober: icmp
     icmp:
